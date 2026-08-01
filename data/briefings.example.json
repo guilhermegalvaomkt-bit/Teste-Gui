@@ -1,0 +1,50 @@
+[
+  {
+    "id": "exemplo-1",
+    "titulo": "Reels — Lançamento coleção verão",
+    "campanha": "Coleção Verão 2026",
+    "status": "Aprovado",
+    "tipoReferencia": "video",
+    "referenciaUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "imagemUpload": "",
+    "headline": "O verão chegou — e a sua nova estampa favorita também.",
+    "copy": "Chega de looks previsíveis. A Coleção Verão 2026 mistura cores vivas e caimento leve pra você brilhar do dia à noite.\n\n☀️ Tecidos que respiram\n🌊 Estampas exclusivas\n✨ Peças que combinam entre si\n\nMonte seu look completo sem pensar duas vezes.",
+    "cta": "Toque em 'Comprar' e garanta a sua antes que esgote.",
+    "tags": ["Reels", "Instagram", "Lançamento"],
+    "observacoes": "Referência de ritmo e cortes rápidos. Adaptar trilha para algo mais tropical.",
+    "criadoEm": "2026-07-20T14:00:00.000Z",
+    "atualizadoEm": "2026-07-28T10:30:00.000Z"
+  },
+  {
+    "id": "exemplo-2",
+    "titulo": "Post feed — Prova social de clientes",
+    "campanha": "Sempre ativo",
+    "status": "Em revisão",
+    "tipoReferencia": "imagem",
+    "referenciaUrl": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+    "imagemUpload": "",
+    "headline": "Mais de 10 mil pessoas já escolheram a gente.",
+    "copy": "Não é sorte — é confiança. Todos os dias, milhares de clientes voltam porque encontram qualidade de verdade.\n\nE você, já faz parte dessa história?",
+    "cta": "Deixe seu comentário e conte a sua experiência 💜",
+    "tags": ["Feed", "Prova social"],
+    "observacoes": "Testar 2 variações de headline no A/B.",
+    "criadoEm": "2026-07-22T09:00:00.000Z",
+    "atualizadoEm": "2026-07-25T16:45:00.000Z"
+  },
+  {
+    "id": "exemplo-3",
+    "titulo": "Anúncio — Oferta de primeira compra",
+    "campanha": "Aquisição",
+    "status": "Rascunho",
+    "tipoReferencia": "imagem",
+    "referenciaUrl": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80",
+    "imagemUpload": "",
+    "headline": "Sua primeira compra sai com 15% OFF.",
+    "copy": "Bora começar do jeito certo? Quem chega agora ganha desconto exclusivo na estreia.\n\nSem pegadinha, sem letra miúda. Só um empurrãozinho pra você experimentar o que todo mundo já ama.",
+    "cta": "Use o cupom BEMVINDO15 no carrinho.",
+    "tags": ["Anúncio", "Meta Ads", "Promoção"],
+    "observacoes": "Confirmar validade do cupom com o time de tráfego.",
+    "criadoEm": "2026-07-30T11:00:00.000Z",
+    "atualizadoEm": "2026-07-30T11:00:00.000Z"
+  }
+]
