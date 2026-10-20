@@ -1,0 +1,98 @@
+/* Tokens reais do tema da loja (drgut.com.br), copiados do CSS ao vivo pelo operador em 2026-10-20.
+   Fonte de verdade para fontes, cores e raios da LP. Não inventar valores fora daqui. */
+
+:root {
+  /* Tipografia */
+  --body-font: Poppins, sans-serif;
+  --heading-font: Sora, sans-serif;
+  --menu-font: Sora, sans-serif;
+  --btn-font: Sora, sans-serif;
+  --body-font-size: 15px;
+  --body-line-height: 1.714;
+  --body-weight: 400;
+  --heading-font-scale: 1.0;
+  --heading-letter-spacing: -0.034em;
+  --heading-weight: 600;
+  --subheading-weight: 500;
+  --h0-size: 4.8rem; --h1-size: 4rem; --h2-size: 3.6rem; --h3-size: 3rem;
+  --h4-size: 2.4rem; --h5-size: 1.8rem; --h6-size: 1.6rem;
+  /* html font-size: 62.5% (1rem = 10px) */
+
+  /* Cores (color-default) */
+  --color-background: #ffffff;
+  --color-primary: #e82d3a;
+  --color-primary-rgb: 232, 45, 58;
+  --color-text: #444444;
+  --color-heading: #111111;
+  --color-link: #444444;
+  --color-link-hover: #e82d3a;
+  --color-border: #ebebeb;
+  --border-color-base: #e5e5e5;
+  --light-grey-color: #f5f5f5;
+  --grey-color: #f5f5f5;
+  --color-white: #FFF;
+  --color-dark: #111;
+
+  /* Botões */
+  --btn-primary-color: #ffffff;
+  --btn-primary-bg-color: #e82d3a;
+  --btn-primary-hover-bg-color: #fe7900;
+  --btn-outline-color: #111111;
+  --btn-outline-border-color: #111111;
+  --btn-radius: 30px;
+  --btn-padding-y: 1.5rem;
+  --btn-padding-x: 3rem;          /* 5.5rem em >=768px */
+  --btn-font-size: 15px;
+  --btn-text-transform: unset;
+
+  /* Inputs */
+  --input-height: 5rem;
+  --input-padding: 1rem 2rem;
+  --inputs-border-width: 1px;
+  --input-border-radius: 30px;
+  --input-bg: rgba(255, 255, 255, 0.6);
+
+  /* Layout */
+  --page-width: 1200px;
+  --fluid-container-width: 1410px;
+  --section-spacing: 50px;        /* 90px em >=768px */
+  --rounded-radius: 10px;
+  --shadow: 5px 0px 30px 0px rgba(0, 0, 0, 0.08);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Badges */
+  --bages-radius: 15px;
+  --bages-sale-bg-color: #E72E3A;
+  --bages-new-bg-color: #F2FFFE;
+  --bages-pre-order-bg-color: #6a33d8;
+  --bages-sold-out-bg-color: #666666;
+
+  /* Header da loja (section settings) */
+  --hg-bg: #ffffff;
+  --hg-nav-color: #2b2b22;
+  --hg-nav-size: 15px;
+  --hg-nav-weight: 600;
+  --hg-nav-gap: 26px;
+  --hg-cta-bg: #e72e3a;
+  --hg-cta-color: #ffffff;
+  --hg-cta-size: 14px;
+  --hg-count-bg: #2b2b22;
+  --hg-badge-bg: #f6c445;
+  --hg-badge-color: #1a1a1a;
+  --hg-logo-width: 110px;
+  --hg-logo-width-mobile: 85px;
+  --hg-whats-color: #16110f;
+
+  /* Card de produto / preço */
+  --dg-card-border: #E6E4E3;
+  --dg-card-radius: 20px;
+  --dg-card-border-hover: #DCD9D8;
+  --dg-pix-color: #12B39A;
+  --dg-price-size: 20px;
+  --height-bar: 48px;
+  --height-header: 74px;
+
+  /* Judge.me (reviews) */
+  --jdgm-primary-color: #E82D3A;
+  --jdgm-star-color: #E82D3A;
+}
