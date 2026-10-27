@@ -219,3 +219,11 @@
 .cv .sticky .btn{width:auto;min-width:0;flex:none;padding:1.2rem 2.4rem;min-height:46px}
 .cv .sticky__txt{flex:1;min-width:0}
 .cv .sticky__price{white-space:nowrap}
+
+/* avaliacoes: espacamento mais justo */
+#avaliacoes{padding-top:4rem;padding-bottom:4rem}
+@media(min-width:768px){#avaliacoes{padding-top:5.6rem;padding-bottom:5.6rem}}
+#avaliacoes h2{margin-bottom:.8rem}
+.sub--tight{margin-bottom:2rem}
+#comprar{padding-top:2.4rem}
+@media(min-width:768px){#comprar{padding-top:4rem}}
