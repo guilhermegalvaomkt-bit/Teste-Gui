@@ -117,7 +117,7 @@
   var main = $('#galMain');
   $$('.thumb').forEach(function (t) {
     t.addEventListener('click', function () {
-      if (main) main.src = t.dataset.src;
+      if (main) { main.src = t.dataset.src; if (t.dataset.srcset) main.srcset = t.dataset.srcset; }
       $$('.thumb').forEach(function (x) { x.classList.toggle('is-on', x === t); });
     });
   });
@@ -138,7 +138,7 @@
         row.className = 'line';
         var img = qty >= 3 ? 'kit3' : (qty === 2 ? 'kit2' : 'kit1');
         row.innerHTML =
-          '<img src="assets/img/' + img + '.webp" alt="" width="320" height="320">' +
+          '<img src="assets/img/' + img + '-160.webp" alt="" width="160" height="160">' +
           '<div class="line__t"><p class="line__n">dr.GUT Fibras · ' + latas(qty) + '</p>' +
           '<p class="line__p"><s>' + brl(compareFor(qty)) + '</s> ' + brl(total) + '</p></div>' +
           '<div class="line__qty">' +

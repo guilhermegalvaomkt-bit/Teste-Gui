@@ -327,8 +327,8 @@ ul,ol{margin:0;padding:0;list-style:none}
 .ft li{margin-bottom:.8rem}
 .ft a{color:rgba(255,255,255,.65);text-decoration:none}
 .ft a:hover{color:#fff}
-.ft__disc{border-top:1px solid rgba(255,255,255,.12);padding-top:2.4rem;font-size:1.15rem;line-height:1.6;color:rgba(255,255,255,.45)}
-.ft__cnpj{font-size:1.15rem;color:rgba(255,255,255,.38);margin:0}
+.ft__disc{border-top:1px solid rgba(255,255,255,.12);padding-top:2.4rem;font-size:1.15rem;line-height:1.6;color:rgba(255,255,255,.62)}
+.ft__cnpj{font-size:1.15rem;color:rgba(255,255,255,.58);margin:0}
 
 /* ---- sticky mobile ---- */
 .sticky{
