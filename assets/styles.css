@@ -217,11 +217,12 @@ ul,ol{margin:0;padding:0;list-style:none}
 .plan__txt{flex:1;min-width:0}
 .plan__name{font-family:var(--heading-font);font-weight:600;font-size:1.6rem;color:var(--heading);margin:0}
 .plan__unit{font-size:1.3rem;margin:0}
-.plan__inst{font-size:1.25rem;color:var(--heading);font-weight:600;margin:.1rem 0 0}
+.plan__inst{font-size:1.2rem;color:#6b6b6b;font-weight:500;margin:.1rem 0 0}
 .plan__dose{font-size:1.2rem;color:var(--primary);font-weight:500;margin:0}
 .plan__price{text-align:right;flex:none}
 .plan__was{display:block;font-size:1.2rem;text-decoration:line-through;color:#8a8a8a}
 .plan__now{font-family:var(--heading-font);font-weight:700;font-size:1.7rem;color:var(--heading)}
+.plan__now small{font-size:1.1rem;font-weight:600;color:#6b6b6b;margin-right:.2rem}
 .plan__tag{
   position:absolute;top:-10px;left:16px;background:var(--badge-bg);color:var(--badge-fg);
   font-size:1.1rem;font-weight:600;padding:.2rem 1rem;border-radius:15px;

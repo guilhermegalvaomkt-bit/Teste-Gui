@@ -98,7 +98,7 @@
     set('[data-r-inst]', '3x de ' + brl(round2(total / 3)));
     set('[data-r-pix]', brl(round2(total * (1 - PIX_OFF))));
     set('[data-add-price]', brl(total));
-    set('[data-sticky-price]', brl(total));
+    set('[data-sticky-price]', '3x de ' + brl(round2(total / 3)));
     var buyNow = $('[data-buy-now]'); if (buyNow) buyNow.href = checkoutUrl(current);
   }
 

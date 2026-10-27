@@ -168,7 +168,9 @@
 .px h3{font-size:2.2rem;margin-bottom:1.2rem}
 .px__was{font-size:1.4rem;color:#8a8a8a;text-decoration:line-through;margin:0}
 .px__now{font-family:var(--heading-font);font-weight:700;font-size:3.4rem;letter-spacing:-.05em;color:var(--heading);line-height:1;margin:.2rem 0}
+.px__now small{font-size:1.6rem;font-weight:600;letter-spacing:0;color:#6b6b6b;margin-right:.2rem}
 .px__inst{font-size:1.3rem;color:#6b6b6b;margin:0 0 1.8rem}
+.px__inst strong{color:var(--heading)}
 .px__feats{list-style:none;padding:0;margin:0 0 2.2rem;display:grid;gap:.8rem}
 .px__feats li{display:flex;gap:.8rem;align-items:flex-start;font-size:1.4rem;color:var(--heading)}
 .px__feats .ic{color:var(--pix);flex:none;margin-top:3px;width:18px;height:18px}
