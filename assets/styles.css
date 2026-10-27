@@ -71,7 +71,8 @@ ul,ol{margin:0;padding:0;list-style:none}
 .btn--primary:hover{background:var(--primary-hover)}
 .btn--ghost{background:transparent;color:#fff;border-color:#fff}
 .btn--ghost:hover{background:#fff;color:var(--heading)}
-.btn--full{width:100%}
+.btn--full{width:100%;white-space:nowrap}
+@media(max-width:400px){.btn--full{font-size:1.4rem;padding-left:1.6rem;padding-right:1.6rem}}
 
 /* ---- barra promo ---- */
 .promo{background:var(--dark);color:#fff;font-size:1.3rem;min-height:48px;display:flex;align-items:center}
@@ -209,7 +210,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .plan{
   position:relative;display:flex;align-items:center;gap:1.4rem;
   padding:1.6rem;border:2px solid #e6e4e3;border-radius:var(--card-radius);
-  cursor:pointer;transition:border-color var(--transition),background var(--transition);min-height:44px;
+  cursor:pointer;transition:border-color var(--transition),background var(--transition);min-height:44px;flex-wrap:wrap;
 }
 .plan:hover{border-color:#dcd9d8}
 .plan[aria-checked="true"]{border-color:var(--primary);background:rgba(232,45,58,.04)}
@@ -217,7 +218,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .plan__txt{flex:1;min-width:0}
 .plan__name{font-family:var(--heading-font);font-weight:600;font-size:1.6rem;color:var(--heading);margin:0}
 .plan__unit{font-size:1.3rem;margin:0}
-.plan__inst{font-size:1.2rem;color:#6b6b6b;font-weight:500;margin:.1rem 0 0}
+.plan__inst{display:block;font-size:1.15rem;color:#6b6b6b;font-weight:500;margin:.1rem 0 0;white-space:nowrap}
 .plan__dose{font-size:1.2rem;color:var(--primary);font-weight:500;margin:0}
 .plan__price{text-align:right;flex:none}
 .plan__was{display:block;font-size:1.2rem;text-decoration:line-through;color:#8a8a8a}
@@ -231,6 +232,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 
 .receipt{background:var(--grey);border-radius:var(--radius);padding:1.8rem;margin-bottom:1.8rem;font-size:1.4rem}
 .receipt__line{display:flex;justify-content:space-between;gap:1.6rem;padding:.5rem 0}
+.receipt__line>span:last-child{white-space:nowrap}
 .receipt__line .neg{color:var(--primary);font-weight:600}
 .receipt__line .inc{color:var(--pix);font-weight:600}
 .receipt__total{display:flex;justify-content:space-between;gap:1.6rem;border-top:1px solid #ddd;margin-top:.8rem;padding-top:1.2rem;font-family:var(--heading-font);font-weight:700;font-size:1.8rem;color:var(--heading)}
