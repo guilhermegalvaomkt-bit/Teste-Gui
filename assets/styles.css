@@ -217,6 +217,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .plan__txt{flex:1;min-width:0}
 .plan__name{font-family:var(--heading-font);font-weight:600;font-size:1.6rem;color:var(--heading);margin:0}
 .plan__unit{font-size:1.3rem;margin:0}
+.plan__inst{font-size:1.25rem;color:var(--heading);font-weight:600;margin:.1rem 0 0}
 .plan__dose{font-size:1.2rem;color:var(--primary);font-weight:500;margin:0}
 .plan__price{text-align:right;flex:none}
 .plan__was{display:block;font-size:1.2rem;text-decoration:line-through;color:#8a8a8a}
@@ -232,7 +233,9 @@ ul,ol{margin:0;padding:0;list-style:none}
 .receipt__line .neg{color:var(--primary);font-weight:600}
 .receipt__line .inc{color:var(--pix);font-weight:600}
 .receipt__total{display:flex;justify-content:space-between;gap:1.6rem;border-top:1px solid #ddd;margin-top:.8rem;padding-top:1.2rem;font-family:var(--heading-font);font-weight:700;font-size:1.8rem;color:var(--heading)}
-.receipt__pix{margin:1rem 0 0;font-size:1.3rem;color:var(--pix)}
+.receipt__inst{margin:.6rem 0 0;font-size:1.3rem;color:var(--heading)}
+.receipt__inst strong{font-family:var(--heading-font);font-weight:700}
+.receipt__pix{margin:.4rem 0 0;font-size:1.3rem;color:var(--pix)}
 .receipt__pix strong{font-weight:700}
 
 .micro{font-size:1.2rem;color:#6b6b6b;margin:1.2rem 0 0;text-align:center;line-height:1.5}
