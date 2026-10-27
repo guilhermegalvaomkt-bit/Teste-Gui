@@ -174,7 +174,9 @@
 .px__feats .ic{color:var(--pix);flex:none;margin-top:3px;width:18px;height:18px}
 .px .btn{width:100%;min-width:0;margin-top:auto}
 .px__pix{text-align:center;font-size:1.2rem;color:var(--pix);font-weight:600;margin:1rem 0 0}
-.guarbox{max-width:760px;margin:3.2rem auto 0;background:#fff;border:2px dashed var(--primary);border-radius:var(--card-radius);padding:2.8rem 2.4rem;display:flex;gap:1.8rem;align-items:center}
+.coupon{max-width:760px;margin:2.4rem auto 0;text-align:center;background:#fff6dc;border:1.5px dashed var(--badge-bg);border-radius:30px;padding:1.2rem 2rem;font-size:1.45rem;color:var(--heading)}
+.coupon strong{font-family:var(--heading-font);letter-spacing:.08em;background:var(--badge-bg);padding:.2rem .9rem;border-radius:8px}
+.guarbox{max-width:760px;margin:2.4rem auto 0;background:#fff;border:2px dashed var(--primary);border-radius:var(--card-radius);padding:2.8rem 2.4rem;display:flex;gap:1.8rem;align-items:center}
 .guarbox .ic{width:48px;height:48px;color:var(--primary);flex:none}
 .guarbox h3{font-size:2rem;margin-bottom:.6rem}
 .guarbox p{margin:0;font-size:1.45rem}
