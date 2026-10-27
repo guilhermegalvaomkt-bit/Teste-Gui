@@ -269,12 +269,11 @@
     <h2>Até <em>30% OFF</em> no kit de 3. Teste por 30 dias sem risco.</h2>
 
     <div class="buy__panel">
-      <!-- IDs reais da Shopify entram em data-variant. Os valores abaixo são PLACEHOLDERS,
-           iguais aos de index.html. O único ID real visto no carrinho foi 48293682151642 (lata avulsa). -->
+      <!-- Um produto, uma variante: os kits são a mesma lata em quantidade 1, 2 ou 3.
+           Preços e descontos por quantidade conferidos no checkout Yampi (ver assets/app.js). -->
       <div class="plans" role="radiogroup" aria-label="Escolha a quantidade" id="plans">
         <div class="plan" role="radio" aria-checked="false" tabindex="-1"
-             data-qty="1" data-variant="48293682151642"
-             data-total="147.00" data-compare="160.00" data-save="13.00" data-perdose="4.90" data-ship="0">
+             data-qty="1"              data-total="147.00" data-compare="160.00" data-save="13.00" data-perdose="4.90" data-ship="0">
           <img src="assets/img/kit1.webp" alt="" width="320" height="320" loading="lazy" decoding="async">
           <div class="plan__txt">
             <p class="plan__name">1 lata</p>
@@ -285,8 +284,7 @@
         </div>
 
         <div class="plan" role="radio" aria-checked="false" tabindex="-1"
-             data-qty="2" data-variant="PLACEHOLDER_VARIANT_KIT2"
-             data-total="247.00" data-compare="320.00" data-save="73.00" data-perdose="4.12" data-ship="0">
+             data-qty="2"              data-total="247.00" data-compare="320.00" data-save="73.00" data-perdose="4.12" data-ship="0">
           <span class="plan__tag">Mais vendido</span>
           <img src="assets/img/kit2.webp" alt="" width="320" height="320" loading="lazy" decoding="async">
           <div class="plan__txt">
@@ -298,8 +296,7 @@
         </div>
 
         <div class="plan" role="radio" aria-checked="true" tabindex="0"
-             data-qty="3" data-variant="PLACEHOLDER_VARIANT_KIT3"
-             data-total="337.00" data-compare="480.00" data-save="143.00" data-perdose="3.74" data-ship="1">
+             data-qty="3"              data-total="336.99" data-compare="480.00" data-save="143.01" data-perdose="3.74" data-ship="1">
           <span class="plan__tag plan__tag--alt">Maior economia · 30% OFF</span>
           <img src="assets/img/kit3.webp" alt="" width="320" height="320" loading="lazy" decoding="async">
           <div class="plan__txt">
@@ -307,21 +304,21 @@
             <p class="plan__unit">R$ 112,33 cada</p>
             <p class="plan__dose">R$ 3,74 por dia · 90 dias</p>
           </div>
-          <div class="plan__price"><span class="plan__was"><span class="sr">Preço original:</span> R$ 480,00</span><span class="plan__now">R$ 337,00</span></div>
+          <div class="plan__price"><span class="plan__was"><span class="sr">Preço original:</span> R$ 480,00</span><span class="plan__now">R$ 336,99</span></div>
         </div>
       </div>
 
       <div class="receipt" aria-live="polite">
         <div class="receipt__line"><span data-r-label>3 latas de dr.GUT Fibras (90 doses)</span><span data-r-compare>R$ 480,00</span></div>
-        <div class="receipt__line"><span>Desconto do kit</span><span class="neg" data-r-save>-R$ 143,00</span></div>
+        <div class="receipt__line"><span>Desconto do kit</span><span class="neg" data-r-save>-R$ 143,01</span></div>
         <div class="receipt__line"><span>Frete</span><span data-r-ship>Grátis</span></div>
         <div class="receipt__line"><span>Garantia de 30 dias</span><span class="inc">Incluída</span></div>
-        <div class="receipt__total"><span>Você paga hoje</span><span data-r-total>R$ 337,00</span></div>
-        <p class="receipt__pix">No Pix: <strong data-r-pix>R$ 320,15</strong> com 5% de desconto</p>
+        <div class="receipt__total"><span>Você paga hoje</span><span data-r-total>R$ 336,99</span></div>
+        <p class="receipt__pix">No Pix: <strong data-r-pix>R$ 320,14</strong> com 5% de desconto</p>
       </div>
 
       <button class="btn btn--primary btn--full" type="button" data-add>
-        Adicionar ao carrinho <span data-add-price>R$ 337,00</span>
+        Adicionar ao carrinho <span data-add-price>R$ 336,99</span>
       </button>
       <p class="micro">Garantia incondicional de 30 dias. Não sentiu diferença, devolvemos 100%. Sem burocracia.</p>
       <p class="micro micro--alt">Até 3x sem juros. Frete grátis acima de R$ 247.</p>
@@ -365,7 +362,7 @@
 <div class="sticky" id="sticky" hidden>
   <div class="sticky__txt">
     <p class="sticky__name">dr.GUT Fibras · kit de 3</p>
-    <p class="sticky__price" data-sticky-price>R$ 337,00</p>
+    <p class="sticky__price" data-sticky-price>R$ 336,99</p>
   </div>
   <a class="btn btn--primary" href="#oferta">Ver oferta</a>
 </div>

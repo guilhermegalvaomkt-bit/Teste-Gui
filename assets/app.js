@@ -1,56 +1,76 @@
-/* dr.GUT Fibras LP - carrinho, seletor de kit e animações. Vanilla JS, sem build. */
+/* dr.GUT Fibras LP - seletor de kit, carrinho e checkout Yampi. Vanilla JS, sem build.
+ *
+ * Como a loja funciona de verdade (conferido na Shopify e na Yampi em 2026-10-27):
+ *  - Existe UM produto com UMA variante (48293682151642). Os "kits" são a mesma
+ *    lata em quantidade 1, 2, 3..., com desconto automático por quantidade.
+ *  - O checkout é a Yampi (seguro.drgut.com.br). Ela recebe a quantidade e aplica
+ *    o desconto do kit sozinha, além do Pix com 5% OFF.
+ *  - Os totais abaixo (TIERS) são os que o checkout da Yampi mostra. Se a loja
+ *    mudar preço ou desconto, atualize aqui E nos valores escritos no HTML.
+ */
 (function () {
   'use strict';
 
   // ---- config da loja -----------------------------------------------------
-  // TROCAR PELOS DADOS REAIS DA LOJA ANTES DE RODAR TRÁFEGO:
-  //   SHOP      -> domínio do checkout
-  //   DISCOUNT  -> código do cupom (aplicado UMA vez no checkout)
-  //   data-variant em cada .plan no HTML -> IDs reais de variante
-  var SHOP = 'https://www.drgut.com.br';
-  var DISCOUNT = '';            // vazio = sem cupom no link
-  var FREE_SHIP_FROM = 247;     // "Frete grátis acima de R$ 247"
-  var PIX_OFF = 0.05;           // 5% no Pix
-  var KEY = 'drgut_cart_v1';
+  var YAMPI = {
+    checkout: 'https://seguro.drgut.com.br/checkout',
+    productOptionId: '304113092',                        // SKU da lata na Yampi
+    storeToken: 'THcvrcOSUtt5Y4PpaI9yngzmcYrnxTzsT4o6R4z1' // token público da loja (aparece na URL de todo checkout)
+  };
+  var SHOPIFY = { shop: 'https://www.drgut.com.br', variant: '48293682151642' }; // fallback
+  var UNIT = 147.00;        // preço da lata
+  var COMPARE = 160.00;     // "compare at" da lata
+  var TIERS = { 1: 147.00, 2: 247.00, 3: 336.99 }; // totais por quantidade (Yampi)
+  var UNIT_4PLUS = 112.34;  // 4 ou mais latas: R$ 34,66 OFF por unidade
+  var FREE_SHIP_FROM = 247; // "Frete grátis acima de R$ 247"
+  var PIX_OFF = 0.05;       // 5% no Pix
+  var KEY = 'drgut_cart_v2';
 
   // ---- helpers ------------------------------------------------------------
   function $(s, c) { return (c || document).querySelector(s); }
   function $$(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
+  function brl(n) { return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+  function round2(n) { return Math.round(n * 100) / 100; }
+  function totalFor(qty) { return qty >= 4 ? round2(UNIT_4PLUS * qty) : TIERS[qty]; }
+  function compareFor(qty) { return round2(COMPARE * qty); }
+  function latas(qty) { return qty + (qty === 1 ? ' lata' : ' latas'); }
 
-  function brl(n) {
-    return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  // UTMs da página seguem pro checkout (atribuição do anúncio)
+  function utms() {
+    var out = [];
+    try {
+      var sp = new URLSearchParams(window.location.search);
+      sp.forEach(function (v, k) { if (/^(utm_|fbclid|gclid|ttclid|hef_|tw_)/.test(k)) out.push(encodeURIComponent(k) + '=' + encodeURIComponent(v)); });
+    } catch (e) {}
+    return out.length ? '&' + out.join('&') : '';
+  }
+
+  function checkoutUrl(qty) {
+    if (YAMPI.checkout && YAMPI.productOptionId) {
+      return YAMPI.checkout +
+        '?product_option_id%5B0%5D=' + YAMPI.productOptionId +
+        '&quantity%5B0%5D=' + qty +
+        '&redirectTo=checkout&skipToCheckout=1&clearCart=1&isShopify=1' +
+        '&store_token=' + YAMPI.storeToken +
+        '&metadata%5Bsource_platform%5D=shopify' + utms();
+    }
+    // fallback: checkout nativo da Shopify (mesmos descontos automáticos)
+    return SHOPIFY.shop + '/cart/' + SHOPIFY.variant + ':' + qty;
   }
 
   // localStorage com fallback em memória (modo privado / storage bloqueado)
   var mem = null;
-  function read() {
-    if (mem) return mem;
-    try {
-      var raw = localStorage.getItem(KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) { return []; }
+  function readQty() {
+    if (mem !== null) return mem;
+    try { var v = parseInt(localStorage.getItem(KEY), 10); return v > 0 ? v : 0; } catch (e) { return 0; }
   }
-  function write(lines) {
-    try { localStorage.setItem(KEY, JSON.stringify(lines)); mem = null; }
-    catch (e) { mem = lines; }
+  function writeQty(q) {
+    try { localStorage.setItem(KEY, String(q)); mem = null; } catch (e) { mem = q; }
   }
 
   // ---- seletor de kit (radiogroup acessível) ------------------------------
   var plans = $$('.plan');
-  var group = $('#plans');
-  var current = null;
-
-  function planData(el) {
-    return {
-      qty: parseInt(el.dataset.qty, 10),
-      variant: el.dataset.variant,
-      total: parseFloat(el.dataset.total),
-      compare: parseFloat(el.dataset.compare),
-      save: parseFloat(el.dataset.save),
-      perdose: parseFloat(el.dataset.perdose),
-      freeShip: el.dataset.ship === '1'
-    };
-  }
+  var current = null; // quantidade selecionada
 
   function select(el, focus) {
     if (!el) return;
@@ -59,28 +79,26 @@
       p.setAttribute('aria-checked', on ? 'true' : 'false');
       p.tabIndex = on ? 0 : -1;
     });
-    current = planData(el);
+    current = parseInt(el.dataset.qty, 10);
     if (focus) el.focus();
     paint();
   }
 
-  // Mantém estático e dinâmico iguais: o HTML já nasce com o kit de 2
+  // Mantém estático e dinâmico iguais: o HTML já nasce com o kit padrão
   // selecionado e os mesmos valores que esta função escreve.
   function paint() {
     if (!current) return;
-    var doses = current.qty * 30;
-    var label = current.qty + (current.qty === 1 ? ' lata' : ' latas') +
-                ' de dr.GUT Fibras (' + doses + ' doses)';
-
+    var total = totalFor(current), compare = compareFor(current);
     var set = function (sel, val) { var el = $(sel); if (el) el.textContent = val; };
-    set('[data-r-label]', label);
-    set('[data-r-compare]', brl(current.compare));
-    set('[data-r-save]', '-' + brl(current.save));
-    set('[data-r-ship]', current.freeShip ? 'Grátis' : 'Calculado no checkout');
-    set('[data-r-total]', brl(current.total));
-    set('[data-r-pix]', brl(current.total * (1 - PIX_OFF)));
-    set('[data-add-price]', brl(current.total));
-    set('[data-sticky-price]', brl(current.total));
+    set('[data-r-label]', latas(current) + ' de dr.GUT Fibras (' + (current * 30) + ' doses)');
+    set('[data-r-compare]', brl(compare));
+    set('[data-r-save]', '-' + brl(round2(compare - total)));
+    set('[data-r-ship]', total >= FREE_SHIP_FROM ? 'Grátis' : 'Calculado no checkout');
+    set('[data-r-total]', brl(total));
+    set('[data-r-pix]', brl(round2(total * (1 - PIX_OFF))));
+    set('[data-add-price]', brl(total));
+    set('[data-sticky-price]', brl(total));
+    var buyNow = $('[data-buy-now]'); if (buyNow) buyNow.href = checkoutUrl(current);
   }
 
   plans.forEach(function (el) {
@@ -93,7 +111,7 @@
       if (next) { e.preventDefault(); select(next, true); }
     });
   });
-  if (group) select($('.plan[aria-checked="true"]') || plans[0], false);
+  if (plans.length) select($('.plan[aria-checked="true"]') || plans[0], false);
 
   // ---- galeria ------------------------------------------------------------
   var main = $('#galMain');
@@ -104,61 +122,53 @@
     });
   });
 
-  // ---- carrinho -----------------------------------------------------------
+  // ---- carrinho (uma linha: a lata, em quantidade) ------------------------
   var cart = $('#cart'), ovl = $('[data-cart-ovl]'), lastFocus = null;
 
   function render() {
-    var lines = read();
+    var qty = readQty();
     var box = $('[data-cart-lines]');
     var empty = $('[data-cart-empty]');
-    var total = 0, units = 0;
+    var total = qty ? totalFor(qty) : 0;
 
-    if (box) box.innerHTML = '';
-    lines.forEach(function (l, idx) {
-      total += l.total * l.n;
-      units += l.qty * l.n;
-      if (!box) return;
-      var row = document.createElement('div');
-      row.className = 'line';
-      row.innerHTML =
-        '<img src="assets/img/kit' + l.qty + '.webp" alt="" width="320" height="320">' +
-        '<div class="line__t"><p class="line__n">' + l.qty + (l.qty === 1 ? ' lata' : ' latas') + '</p>' +
-        '<p class="line__p">' + brl(l.total) + '</p></div>' +
-        '<div class="line__qty">' +
-          '<button type="button" data-dec="' + idx + '" aria-label="Diminuir quantidade">-</button>' +
-          '<span>' + l.n + '</span>' +
-          '<button type="button" data-inc="' + idx + '" aria-label="Aumentar quantidade">+</button>' +
-        '</div>';
-      box.appendChild(row);
-    });
+    if (box) {
+      box.innerHTML = '';
+      if (qty) {
+        var row = document.createElement('div');
+        row.className = 'line';
+        var img = qty >= 3 ? 'kit3' : (qty === 2 ? 'kit2' : 'kit1');
+        row.innerHTML =
+          '<img src="assets/img/' + img + '.webp" alt="" width="320" height="320">' +
+          '<div class="line__t"><p class="line__n">dr.GUT Fibras · ' + latas(qty) + '</p>' +
+          '<p class="line__p"><s>' + brl(compareFor(qty)) + '</s> ' + brl(total) + '</p></div>' +
+          '<div class="line__qty">' +
+            '<button type="button" data-dec aria-label="Diminuir quantidade">-</button>' +
+            '<span>' + qty + '</span>' +
+            '<button type="button" data-inc aria-label="Aumentar quantidade">+</button>' +
+          '</div>';
+        box.appendChild(row);
+      }
+    }
 
-    if (empty) empty.hidden = lines.length > 0;
+    if (empty) empty.hidden = qty > 0;
     var t = $('[data-cart-total]'); if (t) t.textContent = brl(total);
-    var p = $('[data-cart-pix]'); if (p) p.textContent = brl(total * (1 - PIX_OFF));
-    var ship = $('[data-cart-ship]'); if (ship) ship.hidden = !(total > FREE_SHIP_FROM);
+    var p = $('[data-cart-pix]'); if (p) p.textContent = brl(round2(total * (1 - PIX_OFF)));
+    var ship = $('[data-cart-ship]'); if (ship) ship.hidden = !(total >= FREE_SHIP_FROM);
 
     var badge = $('[data-cart-count]');
-    if (badge) { badge.textContent = units; badge.hidden = units === 0; }
+    if (badge) { badge.textContent = qty; badge.hidden = qty === 0; }
 
     var co = $('[data-checkout]');
     if (co) {
-      // Permalink da Shopify: /cart/VARIANTE:QTD,VARIANTE:QTD?discount=CODIGO
-      var parts = lines.map(function (l) { return l.variant + ':' + l.n; });
-      co.href = parts.length
-        ? SHOP + '/cart/' + parts.join(',') + (DISCOUNT ? '?discount=' + DISCOUNT : '')
-        : '#';
-      co.setAttribute('aria-disabled', parts.length ? 'false' : 'true');
+      co.href = qty ? checkoutUrl(qty) : '#';
+      co.setAttribute('aria-disabled', qty ? 'false' : 'true');
     }
   }
 
   function add() {
     if (!current) return;
-    var lines = read();
-    var hit = null;
-    lines.forEach(function (l) { if (l.variant === current.variant) hit = l; });
-    if (hit) hit.n += 1;                                  // adição duplicada funde
-    else lines.push({ variant: current.variant, qty: current.qty, total: current.total, n: 1 });
-    write(lines);
+    // Adicionar de novo o mesmo kit soma as latas (a Yampi recalcula o desconto)
+    writeQty(readQty() + current);
     render();
     open();
   }
@@ -166,14 +176,12 @@
   function focusables() {
     return $$('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])', cart);
   }
-
   function open() {
     lastFocus = document.activeElement;
     if (ovl) ovl.hidden = false;
     if (cart) { cart.hidden = false; var f = focusables(); if (f[0]) f[0].focus(); }
     document.body.style.overflow = 'hidden';
   }
-
   function close() {
     if (ovl) ovl.hidden = true;
     if (cart) cart.hidden = true;
@@ -187,7 +195,7 @@
   $$('[data-add]').forEach(function (b) { b.addEventListener('click', add); });
 
   document.addEventListener('keydown', function (e) {
-    if (cart && cart.hidden) return;
+    if (!cart || cart.hidden) return;
     if (e.key === 'Escape') { close(); return; }
     if (e.key !== 'Tab') return;
     var f = focusables(); if (!f.length) return;
@@ -197,16 +205,16 @@
   });
 
   if (cart) cart.addEventListener('click', function (e) {
-    var dec = e.target.getAttribute && e.target.getAttribute('data-dec');
-    var inc = e.target.getAttribute && e.target.getAttribute('data-inc');
-    if (dec === null && inc === null) return;
-    var lines = read();
-    var i = parseInt(dec !== null ? dec : inc, 10);
-    if (!lines[i]) return;
-    lines[i].n += (dec !== null ? -1 : 1);
-    if (lines[i].n < 1) lines.splice(i, 1);
-    write(lines);
+    var t = e.target.closest ? e.target.closest('[data-dec],[data-inc]') : null;
+    if (!t) return;
+    var q = readQty() + (t.hasAttribute('data-dec') ? -1 : 1);
+    writeQty(q < 1 ? 0 : q);
     render();
+  });
+
+  if (cart) cart.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('[data-checkout]') : null;
+    if (a && a.getAttribute('aria-disabled') === 'true') e.preventDefault();
   });
 
   render();

@@ -229,13 +229,11 @@
       </div>
 
       <div class="buy__panel">
-        <!-- IDs reais da Shopify entram em data-variant. Os valores abaixo são PLACEHOLDERS.
-             O único ID real visto no carrinho da loja foi 48293682151642 (lata avulsa).
-             Para assinatura, adicionar data-selling-plan="<ID>" em cada opção. -->
+        <!-- Um produto, uma variante: os kits são a mesma lata em quantidade 1, 2 ou 3.
+             Preços e descontos por quantidade conferidos no checkout Yampi (ver assets/app.js). -->
         <div class="plans" role="radiogroup" aria-label="Escolha a quantidade" id="plans">
           <div class="plan" role="radio" aria-checked="false" tabindex="-1"
-               data-qty="1" data-variant="48293682151642"
-               data-total="147.00" data-compare="160.00" data-save="13.00" data-perdose="4.90" data-ship="0">
+               data-qty="1"                data-total="147.00" data-compare="160.00" data-save="13.00" data-perdose="4.90" data-ship="0">
             <img src="assets/img/kit1.webp" alt="" width="320" height="320" loading="lazy" decoding="async">
             <div class="plan__txt">
               <p class="plan__name">1 lata</p>
@@ -246,8 +244,7 @@
           </div>
 
           <div class="plan" role="radio" aria-checked="true" tabindex="0"
-               data-qty="2" data-variant="PLACEHOLDER_VARIANT_KIT2"
-               data-total="247.00" data-compare="320.00" data-save="73.00" data-perdose="4.12" data-ship="0">
+               data-qty="2"                data-total="247.00" data-compare="320.00" data-save="73.00" data-perdose="4.12" data-ship="0">
             <span class="plan__tag">Mais vendido</span>
             <img src="assets/img/kit2.webp" alt="" width="320" height="320" loading="lazy" decoding="async">
             <div class="plan__txt">
@@ -259,8 +256,7 @@
           </div>
 
           <div class="plan" role="radio" aria-checked="false" tabindex="-1"
-               data-qty="3" data-variant="PLACEHOLDER_VARIANT_KIT3"
-               data-total="337.00" data-compare="480.00" data-save="143.00" data-perdose="3.74" data-ship="1">
+               data-qty="3"                data-total="336.99" data-compare="480.00" data-save="143.01" data-perdose="3.74" data-ship="1">
             <span class="plan__tag plan__tag--alt">Maior economia</span>
             <img src="assets/img/kit3.webp" alt="" width="320" height="320" loading="lazy" decoding="async">
             <div class="plan__txt">
@@ -268,7 +264,7 @@
               <p class="plan__unit">R$ 112,33 cada</p>
               <p class="plan__dose">R$ 3,74 por dose</p>
             </div>
-            <div class="plan__price"><span class="plan__was"><span class="sr">Preço original:</span> R$ 480,00</span><span class="plan__now">R$ 337,00</span></div>
+            <div class="plan__price"><span class="plan__was"><span class="sr">Preço original:</span> R$ 480,00</span><span class="plan__now">R$ 336,99</span></div>
           </div>
         </div>
 

@@ -408,6 +408,33 @@ jantar, a rotina da manhã). As fotos reais cobrem produto e preparo.
 
 ---
 
+## 8b. Checkout: como a loja funciona de verdade (conferido em 2026-10-27)
+
+Fonte: Admin API da Shopify (MCP) e testes reais no checkout da Yampi.
+
+- **Um produto, uma variante.** `dr.GUT Fibras`, variante `48293682151642`, R$ 147,00,
+  compare-at R$ 160,00, estoque 83. Não existem variantes de kit nem assinatura.
+- **Kits = quantidade.** Descontos automáticos da Shopify por quantidade mínima:
+  2 un. = R$ 47 OFF no pedido; 3 un. = R$ 104 OFF; 4+ un. = R$ 34,66 OFF por unidade.
+  Combinam com desconto de frete, não com outros descontos de produto/pedido.
+- **Checkout é a Yampi** (`seguro.drgut.com.br`), via app Dooki. A Yampi recebe a
+  quantidade e aplica o mesmo desconto sozinha, e mostra "5% de desconto pagando
+  com Pix".
+- **Link direto que a LP usa** (o mesmo que o tema da loja monta ao clicar em
+  "Finalizar a compra"):
+  `https://seguro.drgut.com.br/checkout?product_option_id[0]=304113092&quantity[0]=N&redirectTo=checkout&skipToCheckout=1&clearCart=1&isShopify=1&store_token=THcvrcOSUtt5Y4PpaI9yngzmcYrnxTzsT4o6R4z1&metadata[source_platform]=shopify`
+  O `store_token` é público: aparece na URL de todo checkout da loja. UTMs da LP
+  são repassadas na mesma URL.
+- **Totais confirmados no checkout da Yampi:** 1 un. R$ 147,00 · 2 un. R$ 247,00 ·
+  3 un. **R$ 336,99** (não R$ 337,00) · 4 un. R$ 449,36. A LP usa exatamente esses.
+- **Frete:** tabela única "Padrão" R$ 22,00 no Brasil, sem condição de valor
+  mínimo cadastrada na Shopify. O "frete grátis acima de R$ 247" que o site
+  anuncia não existe como regra na Shopify: ou é regra dentro da Yampi, ou é só
+  texto. **Confirmar com o cliente antes de prometer na LP** (hoje a LP repete o
+  texto do site).
+- **Fallback:** se a Yampi estiver inativa, o permalink nativo da Shopify
+  `https://www.drgut.com.br/cart/48293682151642:N` aplica os mesmos descontos.
+
 ## 9. Lista "precisa do cliente"
 
 Nada disso será inventado. Em ordem de impacto:
