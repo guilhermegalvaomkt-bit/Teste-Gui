@@ -18,9 +18,9 @@
 @media(min-width:768px){.ahero h1{font-size:4.2rem}}
 .ahero h1 em{font-style:normal;color:var(--primary)}
 .ahero__fig{margin:0 0 1.8rem;border-radius:var(--card-radius);overflow:hidden;background:#f2fafc;position:relative;aspect-ratio:4/3}
-.ahero__fig img{width:100%;height:100%;object-fit:contain;object-position:center;padding:4%}
+.ahero__fig img{width:100%;height:100%;object-fit:contain;object-position:center bottom;padding:15% 6% 5%} /* espaço no topo para o selo não cobrir a lata */
 /* desktop: card 2:1, lata inteira ocupando a altura */
-@media(min-width:768px){.ahero__fig{aspect-ratio:2/1}.ahero__fig img{padding:2.5%}}
+@media(min-width:768px){.ahero__fig{aspect-ratio:2/1}.ahero__fig img{object-position:center;padding:2.5%}}
 .ahero__tag{z-index:2;position:absolute;left:14px;top:14px;background:#fff;border-radius:30px;padding:.5rem 1.2rem;font-family:var(--heading-font);font-weight:600;font-size:1.2rem;color:var(--heading);box-shadow:var(--shadow)}
 .ahero__lede{font-size:1.6rem;line-height:1.55;margin-bottom:1.2rem}
 @media(min-width:768px){.ahero__lede{font-size:1.8rem}}
