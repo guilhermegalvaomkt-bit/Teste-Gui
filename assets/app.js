@@ -82,6 +82,7 @@
     current = parseInt(el.dataset.qty, 10);
     if (focus) el.focus();
     paint();
+    if (focus !== null && window.__drgutTrack) window.__drgutTrack.selectKit(current, totalFor(current));
   }
 
   // Mantém estático e dinâmico iguais: o HTML já nasce com o kit padrão
@@ -112,7 +113,7 @@
       if (next) { e.preventDefault(); select(next, true); }
     });
   });
-  if (plans.length) select($('.plan[aria-checked="true"]') || plans[0], false);
+  if (plans.length) select($('.plan[aria-checked="true"]') || plans[0], null); // null = seleção inicial, sem evento
 
   // Botões que vão direto pro checkout com uma quantidade fixa (cards de kit)
   $$('[data-checkout-qty]').forEach(function (a) {
@@ -168,6 +169,7 @@
     var co = $('[data-checkout]');
     if (co) {
       co.href = qty ? checkoutUrl(qty) : '#';
+      co.setAttribute('data-qty', qty); co.setAttribute('data-total', total);
       co.setAttribute('aria-disabled', qty ? 'false' : 'true');
     }
   }
@@ -178,6 +180,7 @@
     writeQty(readQty() + current);
     render();
     open();
+    if (window.__drgutTrack) window.__drgutTrack.addToCart(current, totalFor(current));
   }
 
   function focusables() {
