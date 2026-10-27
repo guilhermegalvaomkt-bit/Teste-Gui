@@ -220,7 +220,7 @@
   render();
 
   // ---- CTA fixo mobile ----------------------------------------------------
-  // index.html usa .hero/#comprar; saiba-mais.html usa .ahero/#oferta
+  // index.html usa .hero/#comprar; laxante-v1.html usa .ahero/#oferta
   var sticky = $('#sticky'), hero = $('.hero') || $('.ahero'), buy = $('#comprar') || $('#oferta');
   function stickyCheck() {
     if (!sticky || !hero) return;

@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/saiba-mais", "destination": "/laxante-v1", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/img/(.*)",
