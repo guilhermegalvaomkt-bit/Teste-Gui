@@ -113,6 +113,12 @@
   });
   if (plans.length) select($('.plan[aria-checked="true"]') || plans[0], false);
 
+  // Botões que vão direto pro checkout com uma quantidade fixa (cards de kit)
+  $$('[data-checkout-qty]').forEach(function (a) {
+    var q = parseInt(a.dataset.checkoutQty, 10);
+    if (q > 0) a.href = checkoutUrl(q);
+  });
+
   // ---- galeria ------------------------------------------------------------
   var main = $('#galMain');
   $$('.thumb').forEach(function (t) {
