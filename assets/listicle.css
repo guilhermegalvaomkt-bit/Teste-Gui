@@ -1,0 +1,134 @@
+/* dr.GUT - advertorial em lista (/saiba-mais). Usa os tokens de styles.css. */
+
+.art{background:#fff}
+.art .wrap{max-width:720px}
+
+/* barra promo (versão listicle) */
+.promo--l{font-weight:600;letter-spacing:.02em}
+
+/* header enxuto */
+.hdr--l .hdr__in{height:64px}
+.hdr--l .btn{min-height:40px;padding:.9rem 2rem;font-size:1.4rem;margin-left:auto}
+
+/* hero do artigo */
+.ahero{padding:2rem 0 1.6rem}
+.ahero__stars{display:flex;align-items:center;gap:.8rem;font-size:1.3rem;color:var(--heading);font-weight:500;margin:0 0 1.4rem}
+.ahero__stars .st{color:var(--primary);letter-spacing:1px;font-size:1.5rem}
+.ahero h1{font-size:2.8rem;line-height:1.12;letter-spacing:-.04em;margin-bottom:1.6rem}
+@media(min-width:768px){.ahero h1{font-size:4.2rem}}
+.ahero h1 em{font-style:normal;color:var(--primary)}
+.ahero__fig{margin:0 0 1.8rem;border-radius:var(--card-radius);overflow:hidden;background:#eef6f8;position:relative;aspect-ratio:4/3}
+.ahero__fig img{width:100%;height:100%;object-fit:cover;object-position:center 55%}
+@media(min-width:768px){.ahero__fig{aspect-ratio:16/9}}
+.ahero__tag{position:absolute;left:14px;top:14px;background:#fff;border-radius:30px;padding:.5rem 1.2rem;font-family:var(--heading-font);font-weight:600;font-size:1.2rem;color:var(--heading);box-shadow:var(--shadow)}
+.ahero__lede{font-size:1.6rem;line-height:1.55;margin-bottom:1.2rem}
+@media(min-width:768px){.ahero__lede{font-size:1.8rem}}
+.ahero__lede strong{color:var(--heading)}
+.ahero .btn{width:100%}
+.byline{font-size:1.2rem;color:#6b6b6b;margin:0 0 1.6rem}
+
+/* pílulas de confiança */
+.pills{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;padding:2rem 0 1rem;border-top:1px solid var(--border);margin-top:2.4rem}
+@media(min-width:600px){.pills{grid-template-columns:repeat(4,1fr)}}
+.pill{display:flex;align-items:center;gap:.8rem;font-size:1.3rem;font-weight:500;color:var(--heading);line-height:1.3}
+.pill .ic{color:var(--primary);width:22px;height:22px}
+
+/* motivos */
+.motivo{padding:4rem 0 1.6rem}
+.motivo__n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(232,45,58,.1);color:var(--primary);font-family:var(--heading-font);font-weight:700;font-size:1.5rem;margin-bottom:1.2rem}
+.motivo h2{font-size:2.6rem;line-height:1.15;letter-spacing:-.04em;margin-bottom:1.8rem}
+@media(min-width:768px){.motivo h2{font-size:3.4rem}}
+.motivo h2 em{font-style:normal;color:var(--primary)}
+.motivo p{font-size:1.6rem;line-height:1.65}
+.motivo p strong{color:var(--heading)}
+.motivo__fig{margin:0 0 2rem;border-radius:var(--card-radius);overflow:hidden;background:var(--grey)}
+.motivo__fig img{width:100%;height:auto}
+.callout{border:2px solid var(--primary);border-radius:var(--card-radius);padding:1.8rem 2rem;font-family:var(--heading-font);font-weight:600;font-size:1.7rem;line-height:1.4;color:var(--heading);margin:2rem 0}
+.callout--soft{border:0;background:rgba(232,45,58,.07)}
+.hint{display:flex;gap:1.2rem;align-items:flex-start;border:1.5px dashed var(--primary);border-radius:var(--card-radius);padding:1.6rem 1.8rem;margin:2rem 0;font-size:1.45rem}
+.hint .ic{color:var(--primary);flex:none;margin-top:3px;width:22px;height:22px}
+.hint p{margin:0;font-size:1.45rem}
+
+/* CTA de item */
+.cta{margin:2.4rem 0 .8rem}
+.cta .btn{width:100%;font-size:1.5rem;text-transform:uppercase;letter-spacing:.02em}
+.cta__sub{display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:1.25rem;color:#6b6b6b;margin:1.2rem 0 0}
+.cta__sub .ic{width:16px;height:16px;color:var(--primary)}
+
+/* ciclo do laxante */
+.ciclo{list-style:none;display:grid;gap:.8rem;margin:0 0 2rem;counter-reset:dia}
+.ciclo li{display:flex;align-items:center;gap:1.4rem;background:var(--grey);border-radius:14px;padding:1.3rem 1.6rem;font-size:1.5rem;color:var(--heading);font-weight:500}
+.ciclo li .d{flex:none;font-family:var(--heading-font);font-weight:700;font-size:1.2rem;color:#6b6b6b;width:46px}
+.ciclo li.bad{background:#fff0f1;color:var(--primary)}
+.ciclo li.bad .d{color:var(--primary)}
+.ciclo li .ic{width:22px;height:22px;color:currentColor;flex:none}
+
+/* lista de 3 fibras */
+.fibras{display:grid;gap:1.2rem;margin:0 0 2rem}
+.fibras li{display:flex;gap:1.4rem;align-items:flex-start;border:1px solid var(--border);border-radius:16px;padding:1.6rem}
+.fibras__n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-family:var(--heading-font);font-weight:700;font-size:1.4rem}
+.fibras li p{margin:0;font-size:1.45rem}
+.fibras li p strong{display:block;font-family:var(--heading-font);color:var(--heading);font-size:1.5rem;margin-bottom:.2rem}
+
+/* passos */
+.passos{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:0 0 2rem}
+.passos li{text-align:center;background:var(--grey);border-radius:16px;padding:1.6rem 1rem}
+.passos img{width:64px;height:64px;margin:0 auto 1rem}
+.passos p{margin:0;font-size:1.3rem;line-height:1.35}
+.passos p strong{display:block;font-family:var(--heading-font);color:var(--heading);font-size:1.4rem}
+
+/* depoimento solto */
+.depo{background:#fff;border:1px solid var(--border);border-radius:var(--card-radius);padding:2rem;margin:0 0 2rem;box-shadow:var(--shadow)}
+.depo .st{color:var(--primary);letter-spacing:2px;font-size:1.4rem;margin:0 0 .8rem}
+.depo p{margin:0 0 .8rem;font-family:var(--heading-font);font-weight:600;font-size:1.6rem;color:var(--heading);line-height:1.4}
+.depo cite{font-style:normal;font-size:1.3rem;color:#6b6b6b}
+.depo cite b{color:var(--primary);font-weight:600}
+
+/* checks */
+.checks{display:grid;gap:1rem;margin:0 0 2rem}
+.checks li{display:flex;gap:1rem;align-items:flex-start;font-size:1.5rem;color:var(--heading);font-weight:500}
+.checks .ic{color:var(--pix);width:22px;height:22px;flex:none;margin-top:3px}
+
+/* prova social */
+.prova{background:var(--grey);padding:4.8rem 0}
+.prova h2{text-align:center;font-size:2.6rem;letter-spacing:-.04em;margin-bottom:2.4rem}
+.prova__grid{display:grid;gap:1.4rem}
+@media(min-width:768px){.prova__grid{grid-template-columns:repeat(3,1fr)}}
+.pcard{background:#fff;border-radius:var(--card-radius);padding:2rem}
+.pcard .st{color:var(--primary);letter-spacing:2px;font-size:1.4rem;margin:0 0 .6rem}
+.pcard h3{font-size:1.7rem;margin-bottom:.8rem}
+.pcard p{font-size:1.4rem;margin:0 0 1.2rem}
+.pcard footer{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.8rem;font-size:1.3rem}
+.pcard cite{font-style:normal;font-weight:600;color:var(--heading)}
+.pcard .tag{font-size:1.1rem;padding:.3rem 1rem;border-radius:12px;background:var(--grey);color:#5a5a5a}
+.pcard .tag--v{background:rgba(18,179,154,.12);color:#0e8f7b;font-weight:600}
+.prova .cta{margin-top:2.4rem}
+
+/* recap */
+.recap{padding:4.8rem 0 2.4rem;text-align:center}
+.recap h2{font-size:2.6rem;letter-spacing:-.04em}
+.recap__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:2.4rem}
+.recap__grid li{background:rgba(232,45,58,.07);border-radius:16px;padding:1.8rem 1.2rem;font-family:var(--heading-font);font-weight:600;font-size:1.4rem;color:var(--heading);display:grid;justify-items:center;gap:.8rem}
+.recap__grid .ic{width:26px;height:26px;color:var(--primary)}
+
+/* oferta final */
+.oferta{padding:2.4rem 0 4.8rem}
+.oferta__kick{display:block;width:max-content;margin:0 auto 1.2rem;background:rgba(232,45,58,.1);color:var(--primary);font-family:var(--heading-font);font-weight:700;font-size:1.2rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem 1.2rem;border-radius:20px}
+.oferta__stars{text-align:center;font-size:1.3rem;font-weight:500;color:var(--heading);margin-bottom:2rem}
+.oferta__stars .st{color:var(--primary);letter-spacing:1px}
+.oferta h2{text-align:center;font-size:2.8rem;letter-spacing:-.04em;margin-bottom:2rem}
+.oferta h2 em{font-style:normal;color:var(--primary)}
+.oferta .buy__panel{margin-top:2rem}
+.oferta__p{font-size:1.6rem;line-height:1.65;margin-top:2.4rem}
+.oferta__p strong{color:var(--heading)}
+.garantia{display:flex;gap:1.6rem;align-items:center;border:1.5px dashed var(--primary);border-radius:var(--card-radius);padding:2rem;margin-top:2.4rem}
+.garantia .ic{width:44px;height:44px;color:var(--primary);flex:none}
+.garantia p{margin:0;font-size:1.35rem}
+.garantia p b{display:block;font-family:var(--heading-font);font-size:1.6rem;color:var(--heading);margin-bottom:.2rem}
+
+/* rodapé compacto */
+.ft--l{padding:3.2rem 0}
+.ft--l .ft__grid{grid-template-columns:1fr;gap:1.6rem}
+.ft__links{display:flex;flex-wrap:wrap;gap:1.6rem;font-size:1.3rem}
+
+/* sticky: esconde também sobre a oferta final */

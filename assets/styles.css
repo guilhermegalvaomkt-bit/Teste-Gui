@@ -336,6 +336,7 @@ ul,ol{margin:0;padding:0;list-style:none}
   background:#fff;border-top:1px solid var(--border);box-shadow:var(--shadow-up);padding:1rem 1.6rem;
   padding-bottom:calc(1rem + env(safe-area-inset-bottom));
 }
+.sticky[hidden]{display:none}
 @media(min-width:960px){.sticky{display:none !important}}
 .sticky__txt{flex:1;min-width:0}
 .sticky__name{font-family:var(--heading-font);font-weight:600;font-size:1.4rem;color:var(--heading);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

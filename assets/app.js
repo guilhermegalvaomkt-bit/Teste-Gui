@@ -212,7 +212,8 @@
   render();
 
   // ---- CTA fixo mobile ----------------------------------------------------
-  var sticky = $('#sticky'), hero = $('.hero'), buy = $('#comprar');
+  // index.html usa .hero/#comprar; saiba-mais.html usa .ahero/#oferta
+  var sticky = $('#sticky'), hero = $('.hero') || $('.ahero'), buy = $('#comprar') || $('#oferta');
   function stickyCheck() {
     if (!sticky || !hero) return;
     var pastHero = hero.getBoundingClientRect().bottom < 0;
