@@ -93,7 +93,7 @@
     set('[data-r-label]', latas(current) + ' de dr.GUT Fibras (' + (current * 30) + ' doses)');
     set('[data-r-compare]', brl(compare));
     set('[data-r-save]', '-' + brl(round2(compare - total)));
-    set('[data-r-ship]', total >= FREE_SHIP_FROM ? 'Grátis' : 'Calculado no checkout');
+    set('[data-r-ship]', total >= FREE_SHIP_FROM ? 'Grátis' : 'Grátis na 1ª compra com cupom DRGUT');
     set('[data-r-total]', brl(total));
     set('[data-r-inst]', '3x de ' + brl(round2(total / 3)));
     set('[data-r-pix]', brl(round2(total * (1 - PIX_OFF))));
