@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft Review</title>
+<style>
+  :root {
+    --bg: #0e0e10;
+    --panel: #161619;
+    --panel-2: #1c1c20;
+    --line: #2a2a30;
+    --text: #ececef;
+    --muted: #8b8b95;
+    --faint: #5c5c66;
+    --accent: #ffb547;
+    --accent-ink: #1a1206;
+    --good: #4fd18b;
+    --bad: #ff6b5b;
+    --range: rgba(255, 181, 71, 0.22);
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    --c-timing: #7aa7ff; --c-audio: #4fd18b; --c-music: #c38bff; --c-text: #ffd95b;
+    --c-visual: #ff8f6b; --c-hook: #ff5fa2; --c-general: #a0a0aa;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.45 var(--sans); }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  textarea { font: inherit; color: inherit; }
+  .app { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+
+  header { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); min-width: 0; }
+  header h1 { font-size: 14px; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  header .sub { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .tabs { display: flex; gap: 4px; overflow-x: auto; flex: 1; min-width: 0; }
+  .tab { background: none; border: 1px solid transparent; border-radius: 6px; padding: 5px 10px; color: var(--muted); white-space: nowrap; display: flex; gap: 6px; align-items: center; }
+  .tab:hover { color: var(--text); background: var(--panel-2); }
+  .tab.on { color: var(--text); border-color: var(--line); background: var(--panel-2); }
+  .tab .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+  .tab .dot.approved { background: var(--good); } .tab .dot.changes { background: var(--bad); }
+  .save-state { color: var(--faint); font-size: 12px; white-space: nowrap; }
+  .credit { color: var(--muted); font-size: 12px; white-space: nowrap; text-decoration: none; border-left: 1px solid var(--line); padding-left: 16px; }
+  .credit:hover { color: var(--text); }
+  @media (max-width: 600px) { .credit { display: none; } }
+
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; min-height: 0; }
+  .stage { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-height: 0; background: #000; }
+  .viewer { position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 16px; }
+  video { max-width: 100%; max-height: 100%; background: #000; border-radius: 4px; }
+  .device-wrap, .device, .screen { display: contents; }
+  .media { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 0; }
+  .chrome { display: none; }
+  .zones { position: absolute; pointer-events: none; overflow: visible; }
+
+  /* phone mockup mode: everything inside .screen is in iPhone points (430 x 932) */
+  .viewer.phone .device-wrap { display: block; position: relative; flex: none; }
+  .viewer.phone .device { display: block; position: absolute; left: 0; top: 0; width: 458px; height: 960px; padding: 13px; transform-origin: 0 0;
+    border-radius: 66px; background: #0b0b0c; border: 1px solid #3a3a40; box-shadow: 0 0 0 2px #1b1b1f, 0 30px 80px rgba(0,0,0,.6); }
+  .viewer.phone .screen { display: block; position: relative; width: 430px; height: 932px; border-radius: 54px; overflow: hidden; background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+  .viewer.phone .screen::after { content: ""; position: absolute; top: 11px; left: 50%; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; z-index: 3; }
+  .viewer.phone .media { position: absolute; display: block; overflow: hidden; }
+  .viewer.phone video { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; border-radius: 0; display: block; }
+  .viewer.phone .chrome { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .chrome .mi, .chrome .mt, .chrome .mb { position: absolute; }
+  .chrome .mt { white-space: nowrap; }
+  .chrome .mt.sh { text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+  .chrome .mt.clip { overflow: hidden; text-overflow: ellipsis; }
+  .chrome b { font-weight: 600; }
+  .zones .lbl { font: 600 26px var(--sans); fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,.7); stroke-width: 6px; }
+  select.btn { appearance: none; padding-right: 22px; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 12px) 50%, calc(100% - 8px) 50%; background-size: 4px 4px; background-repeat: no-repeat; }
+  .card .seen { font-size: 11px; color: var(--faint); }
+  .flash { position: absolute; top: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.75); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .flash.show { opacity: 1; }
+
+  .controls { background: var(--panel); border-top: 1px solid var(--line); padding: 10px 16px 12px; }
+  .timeline { position: relative; height: 34px; cursor: pointer; user-select: none; touch-action: none; }
+  .track { position: absolute; left: 0; right: 0; top: 20px; height: 6px; background: var(--line); border-radius: 3px; }
+  .fill { position: absolute; left: 0; top: 20px; height: 6px; background: #55555f; border-radius: 3px; pointer-events: none; }
+  .sel { position: absolute; top: 16px; height: 14px; background: var(--range); border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); pointer-events: none; display: none; }
+  .head { position: absolute; top: 12px; width: 2px; height: 22px; background: #fff; transform: translateX(-1px); pointer-events: none; }
+  .mk { position: absolute; top: 2px; height: 12px; min-width: 4px; border-radius: 3px; background: var(--accent); transform: translateX(-2px); cursor: pointer; opacity: .9; }
+  .mk:hover, .mk.hot { opacity: 1; outline: 2px solid #fff; }
+  .mk.resolved { opacity: .3; }
+  .hover-time { position: absolute; top: -18px; font: 11px var(--mono); color: var(--muted); transform: translateX(-50%); pointer-events: none; display: none; }
+  .bar { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+  .btn { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; font-size: 13px; }
+  .btn:hover { border-color: #3a3a42; }
+  .btn.icon { width: 34px; padding: 5px 0; text-align: center; }
+  .btn.on { border-color: var(--accent); color: var(--accent); }
+  .time { font: 13px var(--mono); color: var(--muted); min-width: 120px; }
+  .time b { color: var(--text); font-weight: 500; }
+  .spacer { flex: 1; }
+  .keys { color: var(--faint); font-size: 11px; }
+  kbd { font: 11px var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; color: var(--muted); }
+
+  aside { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; border-left: 1px solid var(--line); background: var(--panel); min-height: 0; }
+  .notes { border-bottom: 1px solid var(--line); }
+  .notes summary { padding: 10px 16px; cursor: pointer; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .notes .body { padding: 0 16px 12px; max-height: 180px; overflow: auto; color: #cfcfd6; font-size: 13px; }
+  .notes .body ul { margin: 4px 0; padding-left: 18px; }
+  .notes .body p { margin: 4px 0; }
+
+  .composer { padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .composer .row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .stamp { font: 12px var(--mono); background: var(--accent); color: var(--accent-ink); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .stamp.live { background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); font-weight: 400; }
+  .link { background: none; border: 0; padding: 0; color: var(--muted); font-size: 12px; text-decoration: underline; text-underline-offset: 2px; }
+  .link:hover { color: var(--text); }
+  .composer textarea { width: 100%; min-height: 64px; resize: vertical; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; outline: none; }
+  .composer textarea:focus { border-color: var(--accent); }
+  .cats { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 10px; }
+  .cat { border: 1px solid var(--line); background: none; border-radius: 999px; padding: 2px 9px; font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+  .cat::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--cc); }
+  .cat.on { color: var(--text); border-color: var(--cc); background: color-mix(in srgb, var(--cc) 14%, transparent); }
+  .add { width: 100%; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 8px; font-weight: 600; }
+  .add:disabled { opacity: .4; cursor: default; }
+
+  .list { overflow-y: auto; padding: 8px 8px 16px; }
+  .list .empty { color: var(--faint); text-align: center; padding: 32px 16px; font-size: 13px; }
+  .list-head { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 8px; color: var(--muted); font-size: 12px; }
+  .card { border: 1px solid transparent; border-radius: 8px; padding: 10px; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; }
+  .card:hover { background: var(--panel-2); }
+  .card.hot { border-color: var(--accent); background: var(--panel-2); }
+  .card.resolved .txt { color: var(--faint); text-decoration: line-through; }
+  .card .meta { display: flex; align-items: center; gap: 8px; }
+  .card .when { font: 12px var(--mono); color: var(--accent); background: none; border: 0; padding: 0; }
+  .card .when:hover { text-decoration: underline; }
+  .card .tag { font-size: 11px; color: var(--cc); }
+  .card .txt { grid-column: 1; white-space: pre-wrap; word-break: break-word; }
+  .card .thumb { grid-row: 1 / span 3; grid-column: 2; width: 64px; height: 64px; object-fit: cover; border-radius: 4px; background: #000; cursor: pointer; }
+  .card .acts { grid-column: 1; display: flex; gap: 12px; opacity: 0; transition: opacity .1s; }
+  .card:hover .acts, .card.editing .acts { opacity: 1; }
+  .card textarea { width: 100%; background: var(--bg); border: 1px solid var(--accent); border-radius: 6px; padding: 6px 8px; min-height: 54px; outline: none; }
+
+  .foot { border-top: 1px solid var(--line); padding: 12px 16px 14px; display: grid; gap: 10px; }
+  .foot textarea { width: 100%; min-height: 44px; max-height: 120px; resize: vertical; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; outline: none; }
+  .foot textarea:focus { border-color: #44444c; }
+  .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .verdict button { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px; font-size: 13px; color: var(--muted); }
+  .verdict button.on.approved { border-color: var(--good); color: var(--good); background: color-mix(in srgb, var(--good) 10%, transparent); }
+  .verdict button.on.changes { border-color: var(--bad); color: var(--bad); background: color-mix(in srgb, var(--bad) 10%, transparent); }
+  .send { background: var(--text); color: var(--bg); border: 0; border-radius: 8px; padding: 10px; font-weight: 600; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); display: none; align-items: center; justify-content: center; z-index: 10; padding: 16px; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; max-width: 420px; width: 100%; }
+  .modal h2 { margin: 0 0 8px; font-size: 17px; }
+  .modal p { color: var(--muted); margin: 0 0 16px; }
+  .modal ul { margin: 0 0 16px; padding-left: 18px; color: #cfcfd6; }
+  .modal .actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  @media (max-width: 900px) {
+    .app { height: auto; min-height: 100vh; }
+    main { grid-template-columns: 1fr; }
+    .viewer { height: 60vh; }
+    aside { border-left: 0; border-top: 1px solid var(--line); }
+    .keys { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title">Draft review</h1>
+    <nav class="tabs" id="tabs"></nav>
+    <span class="save-state" id="saveState"></span>
+    <a class="credit" href="https://www.instagram.com/frasercottrell/" target="_blank" rel="noopener">Created by Fraser Cottrell</a>
+  </header>
+
+  <main>
+    <section class="stage">
+      <div class="viewer" id="viewer">
+        <div class="device-wrap" id="deviceWrap"><div class="device" id="device"><div class="screen" id="screen">
+          <div class="media" id="media">
+            <video id="video" playsinline preload="auto"></video>
+            <svg class="zones" id="zones" viewBox="0 0 1080 1920" preserveAspectRatio="none"></svg>
+          </div>
+          <div class="chrome" id="chrome"></div>
+        </div></div></div>
+        <div class="flash" id="flash"></div>
+      </div>
+      <div class="controls">
+        <div class="timeline" id="timeline">
+          <div class="hover-time" id="hoverTime"></div>
+          <div class="track"></div>
+          <div class="fill" id="fill"></div>
+          <div class="sel" id="sel"></div>
+          <div id="markers"></div>
+          <div class="head" id="head"></div>
+        </div>
+        <div class="bar">
+          <button class="btn icon" id="playBtn" title="Play / pause (Space)">▶</button>
+          <button class="btn icon" id="backBtn" title="Back one frame (,)">‹</button>
+          <button class="btn icon" id="fwdBtn" title="Forward one frame (.)">›</button>
+          <span class="time" id="time"><b>0:00.0</b> / 0:00.0</span>
+          <button class="btn" id="inBtn" title="Set range start (I)">In</button>
+          <button class="btn" id="outBtn" title="Set range end (O)">Out</button>
+          <button class="btn" id="speedBtn" title="Playback speed">1×</button>
+          <button class="btn" id="loopBtn" title="Loop the selected range">Loop</button>
+          <button class="btn icon" id="muteBtn" title="Mute (M)">🔊</button>
+          <button class="btn on" id="previewBtn" title="Turn the placement preview on or off (P)">Preview on</button>
+          <select class="btn" id="placement" title="Which platform to preview"></select>
+          <button class="btn" id="safeBtn" title="Outline the areas this placement covers, plus the box that's safe everywhere (S)">Zones</button>
+          <span class="spacer"></span>
+          <span class="keys"><kbd>Space</kbd> play <kbd>C</kbd> note <kbd>I</kbd>/<kbd>O</kbd> range <kbd>,</kbd>/<kbd>.</kbd> frame <kbd>P</kbd> preview on/off</span>
+        </div>
+      </div>
+    </section>
+
+    <aside>
+      <details class="notes" id="notesBox" hidden>
+        <summary>What changed in this draft</summary>
+        <div class="body" id="notesBody"></div>
+      </details>
+
+      <div class="composer">
+        <div class="row">
+          <span class="stamp live" id="stamp">@ 0:00.0</span>
+          <button class="link" id="restamp" hidden>use current time</button>
+          <button class="link" id="clearRange" hidden>clear range</button>
+        </div>
+        <textarea id="noteText" placeholder="Leave a note at this moment… (Enter to save, Shift+Enter for a new line)"></textarea>
+        <div class="cats" id="cats"></div>
+        <button class="add" id="addBtn" disabled>Add note</button>
+      </div>
+
+      <div class="list" id="list"></div>
+
+      <div class="foot">
+        <textarea id="overall" placeholder="Overall thoughts on this draft (optional)"></textarea>
+        <div class="verdict">
+          <button class="approved" data-v="approved">✓ Approve</button>
+          <button class="changes" data-v="changes">↻ Needs changes</button>
+        </div>
+        <button class="send" id="sendBtn">Send feedback to Claude</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div class="overlay" id="confirm">
+  <div class="modal">
+    <h2>Send feedback to Claude?</h2>
+    <ul id="confirmList"></ul>
+    <div class="actions">
+      <button class="btn" id="cancelSend">Keep reviewing</button>
+      <button class="send" id="doSend">Send</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="done">
+  <div class="modal">
+    <h2>Feedback sent</h2>
+    <p>Claude has your notes and will start on the next draft. You can close this tab.</p>
+  </div>
+</div>
+
+<script src="/mockups.js"></script>
+<script>
+const CATS = [
+  ['Timing', '--c-timing'], ['Audio', '--c-audio'], ['Music', '--c-music'], ['Text', '--c-text'],
+  ['Visual', '--c-visual'], ['Hook', '--c-hook'], ['General', '--c-general'],
+];
+const catColor = (name) => `var(${(CATS.find(c => c[0] === name) || CATS[6])[1]})`;
+
+// 9:16 placements, in video pixels on a 1080x1920 frame (see safe-zones.md).
+// vis = what the app shows after cropping; zones = areas its UI covers.
+const PLACEMENTS = {
+  igReels: { label: 'IG Reels', vis: [97, 0, 983, 1920], zones: [
+    [97, 0, 983, 206, 'Top bar'], [886, 870, 983, 1469, 'Buttons'], [97, 1469, 983, 1714, 'Name + caption'], [97, 1714, 983, 1920, 'Progress / menu']] },
+  igReelsAd: { label: 'IG Reels ad', vis: [97, 0, 983, 1920], zones: [
+    [97, 0, 983, 206, 'Top bar'], [886, 1004, 983, 1347, 'Buttons'], [97, 1347, 983, 1714, 'Ad button + name + caption'], [97, 1714, 983, 1920, 'Progress / menu']] },
+  igStory: { label: 'IG Story', vis: [0, 0, 1080, 1920], zones: [[0, 0, 1080, 129, 'Progress + profile']] },
+  igStoryAd: { label: 'IG Story ad', vis: [0, 0, 1080, 1920], zones: [
+    [0, 0, 1080, 129, 'Progress + profile'], [0, 1543, 1080, 1664, 'Ad button (video)'], [0, 1852, 1080, 1920, '"Followed by"']] },
+  igFeed: { label: 'IG Feed (organic)', vis: [0, 91, 1080, 1829], zones: [] },
+  tiktok: { label: 'TikTok', vis: [54, 0, 1026, 1920], zones: [
+    [54, 0, 1026, 228, 'Tabs'], [907, 1020, 1026, 1920, 'Buttons'], [81, 1755, 790, 1920, 'Name + caption']] },
+  tiktokAd: { label: 'TikTok ad', vis: [54, 0, 1026, 1920], zones: [
+    [54, 0, 1026, 228, 'Tabs'], [907, 1020, 1026, 1920, 'Buttons'], [81, 1597, 790, 1920, 'Name + caption + ad bar']] },
+  fbFeed: { label: 'FB Feed (organic, 4:5)', vis: [0, 285, 1080, 1635], zones: [[968, 1528, 1041, 1601, 'Mute']] },
+  fbFeedAd: { label: 'FB Feed ad (2:3)', vis: [0, 150, 1080, 1770], zones: [[968, 1663, 1041, 1736, 'Mute']] },
+  fbReels: { label: 'FB Reels', vis: [57, 0, 1023, 1920], zones: [
+    [57, 0, 1023, 217, 'Top icons'], [930, 1196, 1023, 1740, 'Buttons'], [57, 1740, 1023, 1920, 'Name + caption']] },
+  fbReelsAd: { label: 'FB Reels ad', vis: [57, 0, 1023, 1920], zones: [
+    [57, 0, 1023, 217, 'Top icons'], [930, 1399, 1023, 1540, 'Buttons'], [57, 1540, 1023, 1920, 'Ad button + name + caption']] },
+};
+const SAFE_BOX = [100, 290, 880, 1340];
+
+const $ = (id) => document.getElementById(id);
+const video = $('video');
+const S = {
+  session: null, vid: null, fb: {}, fps: 30,
+  inPt: null, outPt: null, lockedAt: null, cat: 'General',
+  editing: null, loop: false, speeds: [1, 1.5, 2, 0.5], speedIdx: 0,
+  placement: 'igFeed', previewOn: true, safeBox: false,
+};
+try {
+  S.placement = localStorage.getItem('vr.placement2') || 'igFeed';
+  S.previewOn = localStorage.getItem('vr.previewOn') !== '0';
+  S.safeBox = localStorage.getItem('vr.safeBox') === '1';
+} catch {}
+if (!PLACEMENTS[S.placement]) S.placement = 'igFeed';
+
+const fmt = (t) => {
+  if (t == null || isNaN(t)) return '0:00.0';
+  const m = Math.floor(t / 60); const s = (t % 60).toFixed(1).padStart(4, '0');
+  return `${m}:${s}`;
+};
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const fb = () => S.fb[S.vid];
+
+function flash(msg) {
+  const el = $('flash'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(flash.t); flash.t = setTimeout(() => el.classList.remove('show'), 1100);
+}
+
+function renderNotes(md) {
+  if (!md.trim()) return;
+  const html = esc(md).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').split(/\n{2,}/).map(block => {
+    const lines = block.split('\n');
+    if (lines.every(l => /^\s*[-*] /.test(l))) return '<ul>' + lines.map(l => `<li>${l.replace(/^\s*[-*] /, '')}</li>`).join('') + '</ul>';
+    return `<p>${lines.join('<br>')}</p>`;
+  }).join('');
+  $('notesBody').innerHTML = html;
+  $('notesBox').hidden = false;
+  $('notesBox').open = true;
+}
+
+// ---------- placement preview ----------
+const isVertical = () => video.videoWidth && Math.abs(video.videoWidth / video.videoHeight - 9 / 16) < 0.01;
+
+const phoneOn = () => S.previewOn && isVertical();
+
+// Draws the phone mockup (or the plain player) and the optional zones overlay.
+function renderZones() {
+  const p = PLACEMENTS[S.placement];
+  $('placement').value = S.placement;
+  $('placement').style.opacity = S.previewOn ? '' : '.5';
+  $('previewBtn').classList.toggle('on', S.previewOn);
+  $('previewBtn').textContent = S.previewOn ? 'Preview on' : 'Preview off';
+  $('safeBtn').classList.toggle('on', S.safeBox);
+
+  const phone = phoneOn();
+  $('viewer').classList.toggle('phone', phone);
+  if (phone) {
+    const [x, y, w, h, r] = Mockup.media(S.placement);
+    Object.assign($('media').style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px`, borderRadius: `${r}px` });
+    $('screen').style.background = Mockup.screenBg(S.placement);
+    const ses = S.session || {};
+    $('chrome').innerHTML = Mockup.chrome(S.placement, { handle: ses.handle, caption: ses.caption, cta: ses.cta, verified: ses.verified, avatar: ses.avatar || false });
+  } else {
+    $('media').removeAttribute('style'); $('screen').removeAttribute('style'); $('chrome').innerHTML = '';
+  }
+  fitPhone();
+
+  const svg = $('zones');
+  if (!isVertical() || !S.safeBox) { svg.innerHTML = ''; positionZones(); return; }
+  let out = '';
+  const [x0, y0, x1, y1] = p.vis;
+  if (!phone) {
+    // plain player: dim what this placement crops off
+    out += `<path fill="rgba(0,0,0,.82)" fill-rule="evenodd" d="M0 0H1080V1920H0Z M${x0} ${y0}H${x1}V${y1}H${x0}Z"/>`;
+    out += `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="3"/>`;
+  }
+  for (const [a, b, c, d, label] of p.zones) {
+    out += `<rect x="${a}" y="${b}" width="${c - a}" height="${d - b}" fill="rgba(255,90,90,.28)" stroke="rgba(255,130,130,.95)" stroke-width="3" stroke-dasharray="12 8"/>`;
+    out += c - a < 200
+      ? `<text class="lbl" transform="translate(${a + 34} ${b + 16}) rotate(90)">${label}</text>`
+      : `<text class="lbl" x="${a + 14}" y="${b + 38}">${label}</text>`;
+  }
+  const [sx0, sy0, sx1, sy1] = SAFE_BOX;
+  out += `<rect x="${sx0}" y="${sy0}" width="${sx1 - sx0}" height="${sy1 - sy0}" fill="none" stroke="#4fd18b" stroke-width="4" stroke-dasharray="16 10"/>`;
+  out += `<text class="lbl" x="${sx0 + 14}" y="${sy0 + 38}" style="fill:#4fd18b">Safe everywhere</text>`;
+  svg.innerHTML = out;
+  positionZones();
+}
+
+// Scale the 458x960 phone to fit the viewer.
+function fitPhone() {
+  const wrap = $('deviceWrap');
+  if (!$('viewer').classList.contains('phone')) { wrap.removeAttribute('style'); $('device').style.transform = ''; return; }
+  const v = $('viewer'); const cs = getComputedStyle(v);
+  const aw = v.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const ah = v.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const k = Math.max(0.1, Math.min(aw / 458, ah / 960));
+  wrap.style.width = `${458 * k}px`; wrap.style.height = `${960 * k}px`;
+  $('device').style.transform = `scale(${k})`;
+}
+
+// Put the zones SVG exactly over the full 1080x1920 frame, inside the media box.
+function positionZones() {
+  const svg = $('zones');
+  if (phoneOn()) {
+    const [, , w, h] = Mockup.media(S.placement);
+    const k = Math.max(w / 1080, h / 1920); const fw = 1080 * k; const fh = 1920 * k;
+    Object.assign(svg.style, { left: `${(w - fw) / 2}px`, top: `${(h - fh) / 2}px`, width: `${fw}px`, height: `${fh}px` });
+  } else {
+    const vr = video.getBoundingClientRect(); const pr = $('media').getBoundingClientRect();
+    Object.assign(svg.style, { left: `${vr.left - pr.left}px`, top: `${vr.top - pr.top}px`, width: `${vr.width}px`, height: `${vr.height}px` });
+  }
+}
+
+function setPlacement(id) {
+  S.placement = id; S.previewOn = true;
+  try { localStorage.setItem('vr.placement2', id); localStorage.setItem('vr.previewOn', '1'); } catch {}
+  if (video.videoWidth && !isVertical()) flash('Placement previews are for 9:16 videos');
+  renderZones();
+}
+
+function togglePreview() {
+  S.previewOn = !S.previewOn;
+  try { localStorage.setItem('vr.previewOn', S.previewOn ? '1' : '0'); } catch {}
+  if (S.previewOn && video.videoWidth && !isVertical()) flash('Placement previews are for 9:16 videos');
+  flash(S.previewOn ? `Preview: ${PLACEMENTS[S.placement].label}` : 'Preview off');
+  renderZones();
+}
+
+$('placement').innerHTML = Object.entries(PLACEMENTS).map(([id, p]) => `<option value="${id}">${p.label}</option>`).join('');
+$('placement').addEventListener('change', (e) => { setPlacement(e.target.value); e.target.blur(); });
+$('previewBtn').addEventListener('click', togglePreview);
+$('safeBtn').addEventListener('click', () => {
+  S.safeBox = !S.safeBox;
+  try { localStorage.setItem('vr.safeBox', S.safeBox ? '1' : '0'); } catch {}
+  renderZones();
+});
+window.addEventListener('resize', () => { fitPhone(); positionZones(); });
+
+// ---------- persistence ----------
+let saveTimer;
+function save() {
+  $('saveState').textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  const id = S.vid; const body = JSON.stringify(S.fb[id]);
+  saveTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`/api/feedback/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body });
+      if (!r.ok) throw new Error(r.status);
+      $('saveState').textContent = 'Saved';
+    } catch (e) {
+      console.error('Save failed', e);
+      $('saveState').textContent = 'Not saved — is the review server still running?';
+    }
+  }, 350);
+}
+
+async function captureFrame(commentId) {
+  try {
+    if (!video.videoWidth) return null;
+    const h = Math.min(540, video.videoHeight); const w = Math.round(video.videoWidth * h / video.videoHeight);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(video, 0, 0, w, h);
+    const dataUrl = c.toDataURL('image/jpeg', 0.82);
+    const r = await fetch(`/api/frame/${S.vid}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ commentId, dataUrl }) });
+    return r.ok ? await r.json() : null;
+  } catch (e) { console.error('Frame capture failed', e); return null; }
+}
+
+// ---------- video switching ----------
+async function selectVideo(id) {
+  S.vid = id; S.inPt = S.outPt = S.lockedAt = null; S.editing = null;
+  if (!S.fb[id]) {
+    const r = await fetch(`/api/feedback/${id}`); S.fb[id] = await r.json();
+  }
+  const meta = S.session.videos.find(v => v.id === id).meta || {};
+  S.fps = meta.fps || 30;
+  video.src = `/video/${id}`;
+  video.playbackRate = S.speeds[S.speedIdx];
+  $('overall').value = fb().overall || '';
+  renderTabs(); renderVerdict(); renderList(); renderComposer(); renderTimeline();
+}
+
+function renderTabs() {
+  const vids = S.session.videos;
+  $('tabs').innerHTML = vids.length < 2 ? '' : vids.map(v => {
+    const f = S.fb[v.id]; const d = f?.verdict || '';
+    return `<button class="tab ${v.id === S.vid ? 'on' : ''}" data-id="${v.id}"><span class="dot ${d}"></span>${esc(v.name)}</button>`;
+  }).join('');
+}
+
+// ---------- timeline ----------
+function renderTimeline() {
+  const d = video.duration || 0; const t = video.currentTime;
+  const pct = (x) => d ? `${(x / d) * 100}%` : '0%';
+  $('fill').style.width = pct(t); $('head').style.left = pct(t);
+  $('time').innerHTML = `<b>${fmt(t)}</b> / ${fmt(d)}`;
+  const sel = $('sel');
+  if (S.inPt != null) {
+    const a = S.inPt; const b = S.outPt ?? t;
+    sel.style.display = 'block'; sel.style.left = pct(Math.min(a, b)); sel.style.width = `calc(${pct(Math.abs(b - a))} + 0px)`;
+  } else sel.style.display = 'none';
+}
+
+function renderMarkers() {
+  const d = video.duration; if (!d || !fb()) { $('markers').innerHTML = ''; return; }
+  $('markers').innerHTML = fb().comments.map(c => {
+    const left = (c.start / d) * 100; const w = c.end != null ? ((c.end - c.start) / d) * 100 : 0;
+    return `<div class="mk ${c.resolved ? 'resolved' : ''}" data-id="${c.id}" title="${fmt(c.start)} — ${esc(c.text.slice(0, 80))}"
+      style="left:${left}%;width:${w ? `calc(${w}% + 4px)` : '4px'};background:${catColor(c.category)}"></div>`;
+  }).join('');
+}
+
+function seek(t) {
+  video.currentTime = Math.max(0, Math.min(video.duration || 0, t));
+  renderTimeline(); highlight();
+}
+
+const tl = $('timeline');
+function tlTime(e) { const r = tl.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * (video.duration || 0); }
+tl.addEventListener('pointerdown', (e) => {
+  const mk = e.target.closest('.mk');
+  if (mk) { const c = fb().comments.find(x => x.id === mk.dataset.id); if (c) { video.pause(); seek(c.start); scrollToCard(c.id); } return; }
+  tl.setPointerCapture(e.pointerId); seek(tlTime(e));
+  const move = (ev) => seek(tlTime(ev));
+  const up = () => { tl.removeEventListener('pointermove', move); tl.removeEventListener('pointerup', up); };
+  tl.addEventListener('pointermove', move); tl.addEventListener('pointerup', up);
+});
+tl.addEventListener('mousemove', (e) => {
+  const r = tl.getBoundingClientRect(); const h = $('hoverTime');
+  h.style.display = 'block'; h.style.left = `${e.clientX - r.left}px`; h.textContent = fmt(tlTime(e));
+});
+tl.addEventListener('mouseleave', () => { $('hoverTime').style.display = 'none'; });
+
+// ---------- composer ----------
+function composerStart() { return S.inPt ?? S.lockedAt ?? video.currentTime; }
+function composerEnd() { return S.inPt != null ? (S.outPt ?? null) : null; }
+
+function renderComposer() {
+  const start = composerStart(); const end = composerEnd();
+  const locked = S.inPt != null || S.lockedAt != null;
+  const stamp = $('stamp');
+  stamp.textContent = end != null ? `${fmt(Math.min(start, end))} → ${fmt(Math.max(start, end))}` : (S.inPt != null ? `${fmt(start)} → …` : `@ ${fmt(start)}`);
+  stamp.classList.toggle('live', !locked);
+  $('restamp').hidden = !(S.lockedAt != null && S.inPt == null && Math.abs(video.currentTime - S.lockedAt) > 0.05);
+  $('clearRange').hidden = S.inPt == null;
+  $('addBtn').disabled = !$('noteText').value.trim();
+  $('inBtn').classList.toggle('on', S.inPt != null);
+  $('outBtn').classList.toggle('on', S.outPt != null);
+  $('cats').innerHTML = CATS.map(([n, v]) => `<button class="cat ${S.cat === n ? 'on' : ''}" data-cat="${n}" style="--cc:var(${v})">${n}</button>`).join('');
+}
+
+function lockStamp() {
+  if (S.lockedAt == null && S.inPt == null) { video.pause(); S.lockedAt = video.currentTime; renderComposer(); }
+}
+
+async function addNote() {
+  const text = $('noteText').value.trim(); if (!text) return;
+  let start = composerStart(); let end = composerEnd();
+  if (end != null && end < start) [start, end] = [end, start];
+  const c = { id: uid(), start: +start.toFixed(3), end: end != null ? +end.toFixed(3) : null, category: S.cat, text, resolved: false, createdAt: new Date().toISOString(), frame: null, frameUrl: null,
+    placement: S.previewOn && isVertical() ? PLACEMENTS[S.placement].label : null };
+  // grab the frame the reviewer is looking at, at the note's start
+  if (Math.abs(video.currentTime - start) > 0.04) { video.currentTime = start; await new Promise(r => video.addEventListener('seeked', r, { once: true })); }
+  fb().comments.push(c);
+  $('noteText').value = ''; S.lockedAt = null; S.inPt = S.outPt = null;
+  renderComposer(); renderList(); renderTimeline(); save();
+  flash(`Note added at ${fmt(c.start)}`);
+  const shot = await captureFrame(c.id);
+  if (shot) { c.frame = shot.path; c.frameUrl = shot.url; renderList(); save(); }
+}
+
+$('noteText').addEventListener('focus', lockStamp);
+$('noteText').addEventListener('input', () => { lockStamp(); renderComposer(); });
+$('noteText').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addNote(); }
+  if (e.key === 'Escape') { $('noteText').value = ''; S.lockedAt = null; $('noteText').blur(); renderComposer(); }
+});
+$('addBtn').addEventListener('click', addNote);
+$('restamp').addEventListener('click', () => { S.lockedAt = video.currentTime; renderComposer(); });
+$('clearRange').addEventListener('click', () => { S.inPt = S.outPt = null; renderComposer(); renderTimeline(); });
+$('cats').addEventListener('click', (e) => { const b = e.target.closest('.cat'); if (b) { S.cat = b.dataset.cat; renderComposer(); } });
+
+function setIn() { S.inPt = video.currentTime; if (S.outPt != null && S.outPt <= S.inPt) S.outPt = null; S.lockedAt = null; renderComposer(); renderTimeline(); flash(`In ${fmt(S.inPt)}`); }
+function setOut() {
+  if (S.inPt == null) { S.inPt = 0; }
+  S.outPt = video.currentTime; renderComposer(); renderTimeline(); flash(`Out ${fmt(S.outPt)}`);
+}
+$('inBtn').addEventListener('click', setIn);
+$('outBtn').addEventListener('click', setOut);
+
+// ---------- list ----------
+function renderList() {
+  const list = fb().comments.slice().sort((a, b) => a.start - b.start);
+  const open = list.filter(c => !c.resolved).length;
+  $('list').innerHTML = !list.length
+    ? `<div class="empty">No notes yet.<br>Pause anywhere and type, or press <kbd>C</kbd>.<br>Use <kbd>I</kbd> and <kbd>O</kbd> to note a whole section.</div>`
+    : `<div class="list-head"><span>${list.length} note${list.length === 1 ? '' : 's'}${open !== list.length ? ` · ${open} open` : ''}</span></div>` +
+      list.map(c => {
+        const when = c.end != null ? `${fmt(c.start)}–${fmt(c.end)}` : fmt(c.start);
+        const editing = S.editing === c.id;
+        return `<div class="card ${c.resolved ? 'resolved' : ''} ${editing ? 'editing' : ''}" data-id="${c.id}" style="--cc:${catColor(c.category)}">
+          <div class="meta"><button class="when" data-act="seek">${when}</button><span class="tag">● ${esc(c.category || 'General')}</span>${c.placement ? `<span class="seen">in ${esc(c.placement)}</span>` : ''}</div>
+          ${editing ? `<textarea data-edit>${esc(c.text)}</textarea>` : `<div class="txt">${esc(c.text)}</div>`}
+          ${c.frameUrl ? `<img class="thumb" src="${c.frameUrl}" data-act="seek" alt="">` : ''}
+          <div class="acts">
+            ${editing ? `<button class="link" data-act="saveEdit">save</button><button class="link" data-act="cancelEdit">cancel</button>`
+                      : `<button class="link" data-act="edit">edit</button><button class="link" data-act="resolve">${c.resolved ? 'reopen' : 'resolve'}</button><button class="link" data-act="del">delete</button>`}
+          </div>
+        </div>`;
+      }).join('');
+  renderMarkers(); renderTabs(); highlight();
+  if (S.editing) { const ta = $('list').querySelector('[data-edit]'); ta?.focus(); }
+}
+
+$('list').addEventListener('click', (e) => {
+  const card = e.target.closest('.card'); if (!card) return;
+  const act = e.target.closest('[data-act]')?.dataset.act; const c = fb().comments.find(x => x.id === card.dataset.id);
+  if (!c || !act) return;
+  if (act === 'seek') { video.pause(); seek(c.start); if (c.end != null) { S.inPt = c.start; S.outPt = c.end; renderTimeline(); renderComposer(); } }
+  if (act === 'edit') { S.editing = c.id; renderList(); }
+  if (act === 'cancelEdit') { S.editing = null; renderList(); }
+  if (act === 'saveEdit') { const v = card.querySelector('[data-edit]').value.trim(); if (v) c.text = v; S.editing = null; renderList(); save(); }
+  if (act === 'resolve') { c.resolved = !c.resolved; renderList(); save(); }
+  if (act === 'del') { fb().comments = fb().comments.filter(x => x.id !== c.id); renderList(); save(); }
+});
+$('list').addEventListener('keydown', (e) => {
+  if (!e.target.matches('[data-edit]')) return;
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.target.closest('.card').querySelector('[data-act=saveEdit]').click(); }
+  if (e.key === 'Escape') { S.editing = null; renderList(); }
+});
+
+function highlight() {
+  const t = video.currentTime;
+  const hot = (c) => c.end != null ? (t >= c.start - 0.05 && t <= c.end + 0.05) : Math.abs(t - c.start) < 0.35;
+  for (const c of fb()?.comments || []) {
+    const on = hot(c);
+    document.querySelector(`.card[data-id="${c.id}"]`)?.classList.toggle('hot', on);
+    document.querySelector(`.mk[data-id="${c.id}"]`)?.classList.toggle('hot', on);
+  }
+}
+function scrollToCard(id) { document.querySelector(`.card[data-id="${id}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+
+// ---------- verdict / overall / send ----------
+function renderVerdict() {
+  document.querySelectorAll('.verdict button').forEach(b => b.classList.toggle('on', fb().verdict === b.dataset.v));
+}
+document.querySelector('.verdict').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  fb().verdict = fb().verdict === b.dataset.v ? null : b.dataset.v;
+  renderVerdict(); renderTabs(); save();
+});
+$('overall').addEventListener('input', () => { fb().overall = $('overall').value; save(); });
+
+$('sendBtn').addEventListener('click', () => {
+  const pending = $('noteText').value.trim();
+  const items = S.session.videos.map(v => {
+    const f = S.fb[v.id]; const n = f ? f.comments.length : 0;
+    const verdict = f?.verdict === 'approved' ? 'approved' : f?.verdict === 'changes' ? 'needs changes' : 'no verdict yet';
+    return `<li><b>${esc(v.name)}</b>: ${n} note${n === 1 ? '' : 's'}, ${verdict}</li>`;
+  });
+  if (pending) items.push(`<li style="color:var(--accent)">You have an unsaved note in the box. It will be added before sending.</li>`);
+  $('confirmList').innerHTML = items.join('');
+  $('confirm').classList.add('show');
+});
+$('cancelSend').addEventListener('click', () => $('confirm').classList.remove('show'));
+$('doSend').addEventListener('click', async () => {
+  $('doSend').disabled = true;
+  try {
+    if ($('noteText').value.trim()) await addNote();
+    // flush any pending autosaves for every video first
+    clearTimeout(saveTimer);
+    for (const v of S.session.videos) {
+      if (S.fb[v.id]) await fetch(`/api/feedback/${v.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(S.fb[v.id]) });
+    }
+    const r = await fetch('/api/submit', { method: 'POST' });
+    if (!r.ok) throw new Error(r.status);
+    $('confirm').classList.remove('show'); $('done').classList.add('show'); video.pause();
+  } catch (e) {
+    console.error('Submit failed', e);
+    $('confirmList').innerHTML = '<li style="color:var(--bad)">Could not reach the review server. Your notes are saved; ask Claude to restart the review.</li>';
+    $('doSend').disabled = false;
+  }
+});
+
+// ---------- transport ----------
+const step = (n) => { video.pause(); seek(video.currentTime + n / S.fps); };
+$('playBtn').addEventListener('click', () => video.paused ? video.play() : video.pause());
+$('backBtn').addEventListener('click', () => step(-1));
+$('fwdBtn').addEventListener('click', () => step(1));
+$('speedBtn').addEventListener('click', () => {
+  S.speedIdx = (S.speedIdx + 1) % S.speeds.length; video.playbackRate = S.speeds[S.speedIdx];
+  $('speedBtn').textContent = `${S.speeds[S.speedIdx]}×`;
+});
+$('loopBtn').addEventListener('click', () => { S.loop = !S.loop; $('loopBtn').classList.toggle('on', S.loop); flash(S.loop ? 'Looping range' : 'Loop off'); });
+$('muteBtn').addEventListener('click', () => { video.muted = !video.muted; $('muteBtn').textContent = video.muted ? '🔇' : '🔊'; });
+video.addEventListener('click', () => video.paused ? video.play() : video.pause());
+video.addEventListener('play', () => { $('playBtn').textContent = '❚❚'; if ($('noteText').value.trim() === '') S.lockedAt = null; renderComposer(); });
+video.addEventListener('pause', () => { $('playBtn').textContent = '▶'; });
+video.addEventListener('loadedmetadata', () => { renderTimeline(); renderMarkers(); renderZones(); positionZones(); });
+video.addEventListener('timeupdate', () => {
+  if (S.loop && S.inPt != null && S.outPt != null && video.currentTime >= Math.max(S.inPt, S.outPt)) video.currentTime = Math.min(S.inPt, S.outPt);
+});
+(function tick() {
+  if (S.vid) { renderTimeline(); if (!phoneOn()) positionZones(); if (!video.paused) highlight(); if (S.lockedAt == null && S.inPt == null) $('stamp').textContent = `@ ${fmt(video.currentTime)}`; else if (S.lockedAt != null) $('restamp').hidden = S.inPt != null || Math.abs(video.currentTime - S.lockedAt) <= 0.05; }
+  requestAnimationFrame(tick);
+})();
+
+$('tabs').addEventListener('click', (e) => { const t = e.target.closest('.tab'); if (t && t.dataset.id !== S.vid) selectVideo(t.dataset.id); });
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches?.('textarea, input')) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (k === ' ') { e.preventDefault(); video.paused ? video.play() : video.pause(); }
+  else if (k === 'c' || k === 'C' || k === 'Enter') { e.preventDefault(); $('noteText').focus(); }
+  else if (k === 'i' || k === 'I') setIn();
+  else if (k === 'o' || k === 'O') setOut();
+  else if (k === 'x' || k === 'X') { S.inPt = S.outPt = null; renderComposer(); renderTimeline(); }
+  else if (k === 'm' || k === 'M') $('muteBtn').click();
+  else if (k === 'l' || k === 'L') $('loopBtn').click();
+  else if (k === 'p' || k === 'P') togglePreview();
+  else if (k === 's' || k === 'S') $('safeBtn').click();
+  else if (k === ',') step(-1);
+  else if (k === '.') step(1);
+  else if (k === 'ArrowLeft') { e.preventDefault(); seek(video.currentTime - (e.shiftKey ? 5 : 1)); }
+  else if (k === 'ArrowRight') { e.preventDefault(); seek(video.currentTime + (e.shiftKey ? 5 : 1)); }
+});
+
+// ---------- boot ----------
+(async () => {
+  try {
+    S.session = await (await fetch('/api/session')).json();
+    $('title').textContent = S.session.title;
+    document.title = `Review · ${S.session.title}`;
+    renderNotes(S.session.notes || '');
+    if (PLACEMENTS[S.session.placement]) { S.placement = S.session.placement; S.previewOn = true; }
+    await selectVideo(S.session.videos[0].id);
+  } catch (e) {
+    console.error('Boot failed', e);
+    $('list').innerHTML = '<div class="empty">Could not load the review. Is the server running?</div>';
+  }
+})();
+</script>
+</body>
+</html>
